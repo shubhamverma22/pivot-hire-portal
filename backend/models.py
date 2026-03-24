@@ -122,8 +122,9 @@ class Subscription(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), unique=True, nullable=False)
     plan = Column(SAEnum(SubscriptionPlan), default=SubscriptionPlan.FREE, nullable=False)
-    stripe_customer_id = Column(String(255), nullable=True)
-    stripe_subscription_id = Column(String(255), nullable=True)
+    razorpay_customer_id = Column(String(255), nullable=True)
+    razorpay_subscription_id = Column(String(255), nullable=True)
+    razorpay_payment_id = Column(String(255), nullable=True)
     current_period_start = Column(DateTime(timezone=True), nullable=True)
     current_period_end = Column(DateTime(timezone=True), nullable=True)
     applications_used_this_month = Column(Integer, default=0)
@@ -147,7 +148,7 @@ class Job(Base):
     location = Column(String(255), nullable=False)
     salary_min = Column(Integer, nullable=True)
     salary_max = Column(Integer, nullable=True)
-    currency = Column(String(10), default="USD")
+    currency = Column(String(10), default="INR")
     description = Column(Text, nullable=False)
     requirements = Column(Text, nullable=True)
     skills_required = Column(Text, nullable=True)  # comma-separated tags
@@ -176,3 +177,18 @@ class Application(Base):
 
     candidate = relationship("User", back_populates="applications")
     job = relationship("Job", back_populates="applications")
+
+
+# ── Password Reset Token ──────────────────────────────────────────────────────
+
+class PasswordResetToken(Base):
+    __tablename__ = "password_reset_tokens"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    token = Column(String(255), unique=True, nullable=False, index=True)
+    expires_at = Column(DateTime(timezone=True), nullable=False)
+    used = Column(Boolean, default=False)
+    created_at = Column(DateTime(timezone=True), default=utcnow)
+
+    user = relationship("User")

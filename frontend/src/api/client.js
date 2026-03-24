@@ -100,8 +100,16 @@ export const applicationsApi = {
 // ── Subscription ────────────────────────────────────────────────────────────
 export const subscriptionApi = {
   get: () => api.get('/subscription'),
+  plans: () => api.get('/subscription/plans'),
   checkout: (data = {}) => api.post('/subscription/checkout', data),
+  verify: (data) => api.post('/subscription/verify', data),
   cancel: () => api.post('/subscription/cancel'),
+};
+
+// ── Password Reset ──────────────────────────────────────────────────────────
+export const passwordApi = {
+  forgotPassword: (data) => api.post('/auth/forgot-password', data),
+  resetPassword: (data) => api.post('/auth/reset-password', data),
 };
 
 // ── Dashboard ───────────────────────────────────────────────────────────────

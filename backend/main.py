@@ -11,6 +11,7 @@ from routes.job_routes import router as job_router
 from routes.application_routes import router as app_router
 from routes.subscription_routes import router as sub_router
 from routes.dashboard_routes import router as dashboard_router
+from routes.password_routes import router as password_router
 
 settings = get_settings()
 
@@ -43,6 +44,7 @@ app.include_router(job_router)
 app.include_router(app_router)
 app.include_router(sub_router)
 app.include_router(dashboard_router)
+app.include_router(password_router)
 
 
 @app.get("/api/health")

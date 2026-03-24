@@ -138,15 +138,17 @@ export function JobTypeLabel({ type }) {
 }
 
 // ── Salary Format ─────────────────────────────────────────────────────────────
-export function formatSalary(min, max, currency = 'USD') {
+export function formatSalary(min, max, currency = 'INR') {
+  const sym = currency === 'INR' ? '₹' : '$';
   const fmt = (n) => {
+    if (n >= 100000) return `${(n / 100000).toFixed(1)}L`;
     if (n >= 1000) return `${(n / 1000).toFixed(0)}K`;
     return `${n}`;
   };
   if (!min && !max) return null;
-  if (min && max) return `$${fmt(min)} – $${fmt(max)}`;
-  if (min) return `From $${fmt(min)}`;
-  return `Up to $${fmt(max)}`;
+  if (min && max) return `${sym}${fmt(min)} – ${sym}${fmt(max)}`;
+  if (min) return `From ${sym}${fmt(min)}`;
+  return `Up to ${sym}${fmt(max)}`;
 }
 
 // ── Time Ago ──────────────────────────────────────────────────────────────────

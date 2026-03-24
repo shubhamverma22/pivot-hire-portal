@@ -16,7 +16,7 @@ export default function PostJobPage() {
   const navigate = useNavigate();
   const [form, setForm] = useState({
     title: '', role_type: 'full_time', location: '', salary_min: '',
-    salary_max: '', currency: 'USD', description: '', requirements: '', skills_required: '',
+    salary_max: '', currency: 'INR', description: '', requirements: '', skills_required: '',
   });
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState(null);
@@ -80,10 +80,10 @@ export default function PostJobPage() {
             <div>
               <label className="label">Currency</label>
               <select className="input" value={form.currency} onChange={update('currency')}>
-                <option value="USD">USD</option>
+                <option value="INR">INR (₹)</option>
+                <option value="USD">USD ($)</option>
                 <option value="EUR">EUR</option>
                 <option value="GBP">GBP</option>
-                <option value="INR">INR</option>
               </select>
             </div>
           </div>

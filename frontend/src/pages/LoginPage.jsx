@@ -80,7 +80,12 @@ export default function LoginPage() {
               />
             </div>
             <div>
-              <label className="label">Password</label>
+              <div className="flex items-center justify-between">
+                <label className="label">Password</label>
+                <Link to="/forgot-password" className="text-xs text-brand-600 font-medium hover:text-brand-700">
+                  Forgot password?
+                </Link>
+              </div>
               <input
                 type="password" required className="input" placeholder="••••••••"
                 value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })}

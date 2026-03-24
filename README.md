@@ -12,7 +12,8 @@ A full-stack hiring platform where **ex-founders** can create profiles, subscrib
 | Backend    | FastAPI, SQLAlchemy (async), Pydantic v2   |
 | Database   | PostgreSQL 16                              |
 | Auth       | JWT + bcrypt (+ Google OAuth ready)        |
-| Payments   | Stripe integration (with demo fallback)    |
+| Payments   | Razorpay integration (with demo fallback)  |
+| Email      | SendGrid (for password reset emails)       |
 | DevOps     | Docker Compose, ready for AWS deployment   |
 
 ---
@@ -22,7 +23,7 @@ A full-stack hiring platform where **ex-founders** can create profiles, subscrib
 ### Ex-Founder Dashboard
 - Email / Google sign-up & login
 - Profile setup (startup experience, skills, LinkedIn/resume links)
-- Subscription system: **Free** (5 apps/month) and **Premium** ($50/month, unlimited)
+- Subscription system: **Free** (5 apps/month) and **Premium** (₹1,999/month, unlimited)
 - Browse jobs with filters (search, location, role type)
 - Apply to jobs with cover letter
 - Track application status (Applied → Viewed → Shortlisted → Rejected)
@@ -37,8 +38,8 @@ A full-stack hiring platform where **ex-founders** can create profiles, subscrib
 ### Subscription Logic
 | Plan    | Price      | Application Limit | Notes                |
 |---------|------------|-------------------|----------------------|
-| Free    | $0         | 5 per month       | Basic access         |
-| Premium | $50/month  | Unlimited         | Boosted visibility   |
+| Free    | ₹0         | 5 per month       | Basic access         |
+| Premium | ₹1,999/mo  | Unlimited         | Boosted visibility   |
 
 ---
 
@@ -156,11 +157,18 @@ GET   /api/applications/job/{id} — Company: applicants for a job (with filters
 PATCH /api/applications/{id}     — Update status (shortlist/reject)
 ```
 
+### Password Reset
+```
+POST /api/auth/forgot-password   — Send password reset email
+POST /api/auth/reset-password    — Reset password with token
+```
+
 ### Subscription
 ```
 GET  /api/subscription           — Current subscription status
-POST /api/subscription/checkout  — Create Stripe checkout session
-POST /api/subscription/webhook   — Stripe webhook handler
+POST /api/subscription/checkout  — Create Razorpay subscription
+POST /api/subscription/verify    — Verify Razorpay payment signature
+POST /api/subscription/webhook   — Razorpay webhook handler
 POST /api/subscription/cancel    — Cancel premium
 ```
 
@@ -184,13 +192,20 @@ SECRET_KEY=your-secret-key-here
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 
-# Optional: Stripe (leave blank for demo mode)
-STRIPE_SECRET_KEY=
-STRIPE_WEBHOOK_SECRET=
-STRIPE_PRICE_ID_PREMIUM=
+# Optional: Razorpay (leave blank for demo mode)
+RAZORPAY_KEY_ID=
+RAZORPAY_KEY_SECRET=
+RAZORPAY_WEBHOOK_SECRET=
+RAZORPAY_PLAN_ID_PREMIUM=
+
+# Optional: SendGrid (leave blank to print reset links to console)
+SENDGRID_API_KEY=
+SENDGRID_FROM_EMAIL=noreply@pivothire.com
 ```
 
-> **Demo mode**: When `STRIPE_SECRET_KEY` is empty, the checkout endpoint auto-upgrades to Premium — perfect for testing without Stripe.
+> **Demo mode**: When `RAZORPAY_KEY_ID` is empty, the checkout endpoint auto-upgrades to Premium — perfect for testing without Razorpay.
+>
+> **Email fallback**: When `SENDGRID_API_KEY` is empty, password reset links are printed to the backend console — perfect for development.
 
 ---
 
@@ -210,6 +225,7 @@ pivothire/
 │   ├── Dockerfile
 │   └── routes/
 │       ├── auth_routes.py
+│       ├── password_routes.py
 │       ├── profile_routes.py
 │       ├── job_routes.py
 │       ├── application_routes.py
@@ -241,6 +257,8 @@ pivothire/
 │           ├── MyApplicationsPage.jsx
 │           ├── FounderProfilePage.jsx
 │           ├── SubscriptionPage.jsx
+│           ├── ForgotPasswordPage.jsx
+│           ├── ResetPasswordPage.jsx
 │           ├── PostJobPage.jsx
 │           ├── MyJobsPage.jsx
 │           ├── ManageCandidatesPage.jsx
@@ -265,7 +283,7 @@ sudo usermod -aG docker $USER
 # 3. Clone repo and configure
 git clone <repo-url> pivothire && cd pivothire
 cp backend/.env.example backend/.env
-# Edit .env with production values (RDS URL, real secret key, Stripe keys)
+# Edit .env with production values (RDS URL, real secret key, Razorpay keys, SendGrid key)
 
 # 4. Build and run
 docker compose -f docker-compose.yml up -d --build

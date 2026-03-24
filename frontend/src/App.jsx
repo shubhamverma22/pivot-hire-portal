@@ -16,6 +16,8 @@ import PostJobPage from './pages/PostJobPage';
 import MyJobsPage from './pages/MyJobsPage';
 import ManageCandidatesPage from './pages/ManageCandidatesPage';
 import CompanyProfilePage from './pages/CompanyProfilePage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 
 // ── Route Guards ──────────────────────────────────────────────────────────────
 
@@ -66,6 +68,8 @@ export default function App() {
           {/* Guest Routes */}
           <Route path="/login" element={<GuestRoute><LoginPage /></GuestRoute>} />
           <Route path="/register" element={<GuestRoute><RegisterPage /></GuestRoute>} />
+          <Route path="/forgot-password" element={<GuestRoute><ForgotPasswordPage /></GuestRoute>} />
+          <Route path="/reset-password" element={<GuestRoute><ResetPasswordPage /></GuestRoute>} />
 
           {/* Dashboard Routes */}
           <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>

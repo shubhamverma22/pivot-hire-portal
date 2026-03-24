@@ -19,18 +19,28 @@ class Settings(BaseSettings):
     GOOGLE_CLIENT_ID: str = ""
     GOOGLE_CLIENT_SECRET: str = ""
 
-    # Stripe
-    STRIPE_SECRET_KEY: str = ""
-    STRIPE_WEBHOOK_SECRET: str = ""
-    STRIPE_PRICE_ID_PREMIUM: str = ""  # $50/month price ID
+    # Razorpay
+    RAZORPAY_KEY_ID: str = "rzp_test_SVADQpVEBaDkoU"
+    RAZORPAY_KEY_SECRET: str = "0lQxByBN4XJWtJAvWdDGZ3Go"
+    RAZORPAY_WEBHOOK_SECRET: str = ""
+    RAZORPAY_PLAN_ID_PREMIUM: str = "plan_SVAumEuWdWUQ2g"  # Razorpay plan ID for premium
 
-    # Subscription limits
+    # SendGrid (for password reset emails)
+    SENDGRID_API_KEY: str = ""
+    SENDGRID_FROM_EMAIL: str = "noreply@pivothire.com"
+
+    # ── Subscription / Pricing (single source of truth) ───────────────────────
     FREE_PLAN_MONTHLY_LIMIT: int = 5
+    PREMIUM_PLAN_AMOUNT: int = 1999        # in smallest currency unit-friendly display (₹1999)
+    PREMIUM_PLAN_AMOUNT_PAISE: int = 199900  # amount in paise for Razorpay (1999 × 100)
+    PREMIUM_PLAN_CURRENCY: str = "INR"
+    PREMIUM_PLAN_NAME: str = "PivotHire Premium"
+    PREMIUM_PLAN_DESCRIPTION: str = "Unlimited job applications — ₹1,999/month"
 
     # CORS
     CORS_ORIGINS: list[str] = ["http://localhost:5173", "http://localhost:3000"]
 
-    # Frontend URL (for Stripe redirects)
+    # Frontend URL (for Razorpay redirects & password reset links)
     FRONTEND_URL: str = "http://localhost:5173"
 
     class Config:

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { jobsApi, applicationsApi } from '../api/client';
 import { Modal, PageLoader, EmptyState, JobTypeLabel, formatSalary, timeAgo, Toast } from '../components/UI';
-import { Search, MapPin, Filter, Briefcase, Building2, DollarSign, Send, CheckCircle2, ExternalLink } from 'lucide-react';
+import { Search, MapPin, Filter, Briefcase, Building2, IndianRupee, Send, CheckCircle2, ExternalLink } from 'lucide-react';
 import clsx from 'clsx';
 
 const JOB_TYPES = [
@@ -111,7 +111,7 @@ export default function BrowseJobsPage() {
                   <p className="text-sm text-slate-600 mt-2 line-clamp-2">{job.description}</p>
                   <div className="flex items-center gap-4 mt-3 text-xs text-slate-500">
                     {formatSalary(job.salary_min, job.salary_max) && (
-                      <span className="flex items-center gap-1"><DollarSign size={12} /> {formatSalary(job.salary_min, job.salary_max)}</span>
+                      <span className="flex items-center gap-1"><IndianRupee size={12} /> {formatSalary(job.salary_min, job.salary_max)}</span>
                     )}
                     <span>{timeAgo(job.created_at)}</span>
                     <span>{job.application_count} applicant{job.application_count !== 1 ? 's' : ''}</span>

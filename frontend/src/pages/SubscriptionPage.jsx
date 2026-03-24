@@ -1,19 +1,54 @@
 import { useState, useEffect } from 'react';
 import { subscriptionApi } from '../api/client';
 import { PlanBadge, PageLoader, Toast } from '../components/UI';
-import { CreditCard, Check, Zap, Crown, ArrowRight } from 'lucide-react';
+import { Check, Zap, Crown, ArrowRight } from 'lucide-react';
 import clsx from 'clsx';
 
 export default function SubscriptionPage() {
   const [sub, setSub] = useState(null);
+  const [plans, setPlans] = useState(null);
   const [loading, setLoading] = useState(true);
   const [upgrading, setUpgrading] = useState(false);
   const [cancelling, setCancelling] = useState(false);
   const [toast, setToast] = useState(null);
 
   useEffect(() => {
-    subscriptionApi.get().then(setSub).catch(console.error).finally(() => setLoading(false));
+    Promise.all([subscriptionApi.get(), subscriptionApi.plans()])
+      .then(([subData, plansData]) => {
+        setSub(subData);
+        setPlans(plansData);
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
   }, []);
+
+  // Check for upgrade success from URL params
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('upgraded') === 'true') {
+      setToast({ message: 'Upgraded to Premium!', type: 'success' });
+      window.history.replaceState({}, '', '/subscription');
+    }
+  }, []);
+
+  const formatPrice = (amount, symbol) => {
+    return `${symbol}${amount.toLocaleString('en-IN')}`;
+  };
+
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      if (document.getElementById('razorpay-script')) {
+        resolve(true);
+        return;
+      }
+      const script = document.createElement('script');
+      script.id = 'razorpay-script';
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
 
   const handleUpgrade = async () => {
     setUpgrading(true);
@@ -22,16 +57,59 @@ export default function SubscriptionPage() {
         success_url: window.location.origin + '/subscription?upgraded=true',
         cancel_url: window.location.origin + '/subscription',
       });
-      if (res.url) {
-        window.location.href = res.url;
-      } else {
-        // Demo mode — reload
+
+      if (res.demo) {
         setToast({ message: 'Upgraded to Premium!', type: 'success' });
         subscriptionApi.get().then(setSub);
+        setUpgrading(false);
+        return;
       }
+
+      const loaded = await loadRazorpayScript();
+      if (!loaded) {
+        setToast({ message: 'Failed to load payment gateway', type: 'error' });
+        setUpgrading(false);
+        return;
+      }
+
+      const options = {
+        key: res.razorpay_key_id,
+        subscription_id: res.subscription_id,
+        name: res.name,
+        description: res.description,
+        currency: res.currency,
+        prefill: {
+          email: res.user_email,
+          name: res.user_name,
+        },
+        theme: {
+          color: '#4f46e5',
+        },
+        handler: async (response) => {
+          try {
+            await subscriptionApi.verify({
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_subscription_id: response.razorpay_subscription_id,
+              razorpay_signature: response.razorpay_signature,
+            });
+            setToast({ message: 'Upgraded to Premium!', type: 'success' });
+            subscriptionApi.get().then(setSub);
+          } catch (err) {
+            setToast({ message: 'Payment verification failed. Contact support.', type: 'error' });
+          }
+          setUpgrading(false);
+        },
+        modal: {
+          ondismiss: () => {
+            setUpgrading(false);
+          },
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
     } catch (err) {
       setToast({ message: err.message, type: 'error' });
-    } finally {
       setUpgrading(false);
     }
   };
@@ -50,10 +128,13 @@ export default function SubscriptionPage() {
     }
   };
 
-  if (loading) return <PageLoader />;
+  if (loading || !plans) return <PageLoader />;
 
   const isPremium = sub?.plan === 'premium';
   const used = sub?.applications_used_this_month || 0;
+  const freePlan = plans.free;
+  const premiumPlan = plans.premium;
+  const sym = premiumPlan.currency_symbol;
 
   return (
     <div className="space-y-8 animate-fade-in max-w-4xl mx-auto">
@@ -69,7 +150,9 @@ export default function SubscriptionPage() {
           <PlanBadge plan={sub?.plan || 'free'} />
         </div>
         <p className="text-sm text-slate-600">
-          {isPremium ? 'Unlimited applications per month' : `${used}/5 applications used this month`}
+          {isPremium
+            ? 'Unlimited applications per month'
+            : `${used}/${freePlan.monthly_limit} applications used this month`}
         </p>
       </div>
 
@@ -86,14 +169,14 @@ export default function SubscriptionPage() {
             </span>
           )}
           <div className="mb-6">
-            <h3 className="text-xl font-display font-bold text-slate-900">Free</h3>
+            <h3 className="text-xl font-display font-bold text-slate-900">{freePlan.name}</h3>
             <div className="flex items-baseline gap-1 mt-2">
-              <span className="text-4xl font-display font-bold text-slate-900">$0</span>
+              <span className="text-4xl font-display font-bold text-slate-900">{sym}0</span>
               <span className="text-slate-500">/month</span>
             </div>
           </div>
           <ul className="space-y-3 mb-8">
-            {['5 job applications per month', 'Browse all available jobs', 'Create your founder profile', 'Track application status', 'Basic access'].map((f) => (
+            {freePlan.features.map((f) => (
               <li key={f} className="flex items-start gap-2.5 text-sm text-slate-600">
                 <Check size={16} className="text-emerald-500 shrink-0 mt-0.5" />
                 {f}
@@ -123,18 +206,14 @@ export default function SubscriptionPage() {
           <div className="mb-6">
             <h3 className="text-xl font-display font-bold text-slate-900">Premium</h3>
             <div className="flex items-baseline gap-1 mt-2">
-              <span className="text-4xl font-display font-bold text-slate-900">$50</span>
+              <span className="text-4xl font-display font-bold text-slate-900">
+                {formatPrice(premiumPlan.amount, sym)}
+              </span>
               <span className="text-slate-500">/month</span>
             </div>
           </div>
           <ul className="space-y-3 mb-8">
-            {[
-              'Unlimited job applications',
-              'Everything in Free',
-              'Boosted profile visibility',
-              'Priority in candidate listings',
-              'Stand out to top companies',
-            ].map((f) => (
+            {premiumPlan.features.map((f) => (
               <li key={f} className="flex items-start gap-2.5 text-sm text-slate-700">
                 <Zap size={16} className="text-brand-600 shrink-0 mt-0.5" />
                 {f}
@@ -147,7 +226,7 @@ export default function SubscriptionPage() {
             </button>
           ) : (
             <button onClick={handleUpgrade} disabled={upgrading} className="btn-primary w-full btn-lg">
-              {upgrading ? 'Redirecting...' : 'Upgrade to Premium'} <ArrowRight size={18} />
+              {upgrading ? 'Processing...' : 'Upgrade to Premium'} <ArrowRight size={18} />
             </button>
           )}
         </div>

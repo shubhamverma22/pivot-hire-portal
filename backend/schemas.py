@@ -142,6 +142,23 @@ class CreateCheckoutRequest(BaseModel):
     cancel_url: Optional[str] = None
 
 
+class RazorpayVerifyRequest(BaseModel):
+    razorpay_payment_id: str
+    razorpay_subscription_id: str
+    razorpay_signature: str
+
+
+# ── Forgot / Reset Password ──────────────────────────────────────────────────
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str = Field(min_length=6, max_length=128)
+
+
 # ── Job ────────────────────────────────────────────────────────────────────────
 
 class JobCreate(BaseModel):
@@ -150,7 +167,7 @@ class JobCreate(BaseModel):
     location: str = Field(min_length=1, max_length=255)
     salary_min: Optional[int] = None
     salary_max: Optional[int] = None
-    currency: str = "USD"
+    currency: str = "INR"
     description: str = Field(min_length=10)
     requirements: Optional[str] = None
     skills_required: Optional[str] = None
@@ -176,7 +193,7 @@ class JobOut(BaseModel):
     location: str
     salary_min: Optional[int] = None
     salary_max: Optional[int] = None
-    currency: str = "USD"
+    currency: str = "INR"
     description: str
     requirements: Optional[str] = None
     skills_required: Optional[str] = None
