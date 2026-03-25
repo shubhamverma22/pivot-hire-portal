@@ -3,6 +3,7 @@ Seed script: python seed.py
 Creates tables + demo data. Password for all users: password123
 """
 import asyncio
+from sqlalchemy import select
 from database import init_db, async_session
 from models import *
 from auth import hash_password
@@ -13,6 +14,13 @@ PASSWORD = "password123"
 async def seed():
     await init_db()
     async with async_session() as db:
+        # ── Guard: skip if already seeded ──────────────────────────────────
+        existing = await db.execute(select(User).where(User.email == "alex@example.com"))
+        if existing.scalar_one_or_none():
+            print("⚠️  Seed data already exists — skipping. Run with --force to re-seed.")
+            print("   To reset: docker compose down -v && docker compose up -d")
+            return
+
         # ── Founders ───────────────────────────────────────────────────────
         founder1 = User(
             email="alex@example.com", hashed_password=hash_password(PASSWORD),

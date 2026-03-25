@@ -41,7 +41,7 @@ if [ ! -f backend/.env ]; then
     echo "DB_PASSWORD=$DB_PASSWORD" > .env
 
     echo "✅ Environment configured"
-    echo "   Edit backend/.env to add your Razorpay/SendGrid keys if needed"
+    echo "   Edit backend/.env to add your Razorpay/Brevo keys if needed"
 else
     echo "⏭️  backend/.env already exists, skipping setup"
     # Ensure .env exists for docker-compose DB_PASSWORD

@@ -37,7 +37,7 @@ add_env_if_missing "BREVO_SMTP_HOST" "smtp-relay.brevo.com"
 add_env_if_missing "BREVO_SMTP_PORT" "587"
 add_env_if_missing "BREVO_SMTP_USER" ""
 add_env_if_missing "BREVO_SMTP_KEY" ""
-add_env_if_missing "FROM_EMAIL" "noreply@pivothire.com"
+add_env_if_missing "FROM_EMAIL" ""
 add_env_if_missing "FROM_NAME" "PivotHire"
 
 # Remove old SendGrid fields if present
