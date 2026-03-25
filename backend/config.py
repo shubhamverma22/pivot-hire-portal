@@ -20,14 +20,18 @@ class Settings(BaseSettings):
     GOOGLE_CLIENT_SECRET: str = ""
 
     # Razorpay
-    RAZORPAY_KEY_ID: str = "rzp_test_SVADQpVEBaDkoU"
-    RAZORPAY_KEY_SECRET: str = "0lQxByBN4XJWtJAvWdDGZ3Go"
+    RAZORPAY_KEY_ID: str = ""
+    RAZORPAY_KEY_SECRET: str = ""
     RAZORPAY_WEBHOOK_SECRET: str = ""
-    RAZORPAY_PLAN_ID_PREMIUM: str = "plan_SVAumEuWdWUQ2g"  # Razorpay plan ID for premium
+    RAZORPAY_PLAN_ID_PREMIUM: str = ""  # Razorpay plan ID for premium
 
-    # SendGrid (for password reset emails)
-    SENDGRID_API_KEY: str = ""
-    SENDGRID_FROM_EMAIL: str = "noreply@pivothire.com"
+    # Brevo SMTP (for password reset emails)
+    BREVO_SMTP_HOST: str = ""
+    BREVO_SMTP_PORT: int = 587
+    BREVO_SMTP_USER: str = ""   # Your Brevo account/login email
+    BREVO_SMTP_KEY: str = ""    # SMTP key from Brevo dashboard → SMTP & API → SMTP
+    FROM_EMAIL: str = ""
+    FROM_NAME: str = "PivotHire"
 
     # ── Subscription / Pricing (single source of truth) ───────────────────────
     FREE_PLAN_MONTHLY_LIMIT: int = 5

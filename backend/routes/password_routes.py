@@ -1,15 +1,19 @@
+import asyncio
 import secrets
+import smtplib
 from datetime import datetime, timedelta, timezone
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database import get_db
-from models import User, PasswordResetToken
-from schemas import ForgotPasswordRequest, ResetPasswordRequest
 from auth import hash_password
 from config import get_settings
+from database import get_db
+from models import PasswordResetToken, User
+from schemas import ForgotPasswordRequest, ResetPasswordRequest
 
 settings = get_settings()
 router = APIRouter(prefix="/api/auth", tags=["Password Reset"])
@@ -17,25 +21,8 @@ router = APIRouter(prefix="/api/auth", tags=["Password Reset"])
 RESET_TOKEN_EXPIRE_MINUTES = 30
 
 
-async def send_reset_email(email: str, token: str):
-    """Send password reset email via SendGrid."""
-    reset_url = f"{settings.FRONTEND_URL}/reset-password?token={token}"
-
-    if not settings.SENDGRID_API_KEY:
-        # Fallback: print to console for development
-        print(f"\n{'='*60}")
-        print(f"PASSWORD RESET LINK (SendGrid not configured)")
-        print(f"Email: {email}")
-        print(f"Link:  {reset_url}")
-        print(f"{'='*60}\n")
-        return
-
-    import sendgrid
-    from sendgrid.helpers.mail import Mail, Email, To, Content
-
-    sg = sendgrid.SendGridAPIClient(api_key=settings.SENDGRID_API_KEY)
-
-    html_content = f"""
+def _build_reset_email_html(reset_url: str) -> str:
+    return f"""
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 480px; margin: 0 auto; padding: 40px 20px;">
         <div style="text-align: center; margin-bottom: 32px;">
             <h1 style="color: #0f172a; font-size: 24px; margin: 0;">PivotHire</h1>
@@ -63,18 +50,52 @@ async def send_reset_email(email: str, token: str):
     </div>
     """
 
-    message = Mail(
-        from_email=Email(settings.SENDGRID_FROM_EMAIL, "PivotHire"),
-        to_emails=To(email),
-        subject="Reset your PivotHire password",
-        html_content=Content("text/html", html_content),
-    )
+
+def _smtp_send(to_email: str, subject: str, html_body: str) -> None:
+    """Blocking SMTP send — always called via asyncio.to_thread."""
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = subject
+    msg["From"] = f"{settings.FROM_NAME} <{settings.FROM_EMAIL}>"
+    msg["To"] = to_email
+    msg.attach(MIMEText(html_body, "html", "utf-8"))
+
+    with smtplib.SMTP(settings.BREVO_SMTP_HOST, settings.BREVO_SMTP_PORT) as server:
+        server.ehlo()
+        server.starttls()
+        server.login(settings.BREVO_SMTP_USER, settings.BREVO_SMTP_KEY)
+        server.sendmail(settings.FROM_EMAIL, to_email, msg.as_string())
+
+
+async def send_reset_email(email: str, token: str) -> None:
+    """Send a password reset email via Brevo SMTP.
+
+    Falls back to console output when BREVO_SMTP_KEY is not configured
+    (useful for local development without email credentials).
+    """
+    reset_url = f"{settings.FRONTEND_URL}/reset-password?token={token}"
+
+    if not settings.BREVO_SMTP_KEY:
+        # Dev fallback — print link so developers can test without SMTP credentials
+        print(f"\n{'=' * 60}")
+        print("PASSWORD RESET LINK  (Brevo SMTP not configured)")
+        print(f"Email : {email}")
+        print(f"Link  : {reset_url}")
+        print(f"{'=' * 60}\n")
+        return
+
+    html_body = _build_reset_email_html(reset_url)
 
     try:
-        sg.send(message)
-    except Exception as e:
-        print(f"SendGrid error: {e}")
-        # Don't expose email errors to user — still return success
+        await asyncio.to_thread(
+            _smtp_send,
+            to_email=email,
+            subject="Reset your PivotHire password",
+            html_body=html_body,
+        )
+    except Exception as exc:
+        # Log but never surface SMTP errors to the caller —
+        # the endpoint always returns success to prevent email enumeration.
+        print(f"[Brevo SMTP] Failed to send reset email to {email}: {exc}")
 
 
 @router.post("/forgot-password")
@@ -88,11 +109,11 @@ async def forgot_password(data: ForgotPasswordRequest, db: AsyncSession = Depend
         token = secrets.token_urlsafe(48)
         expires_at = datetime.now(timezone.utc) + timedelta(minutes=RESET_TOKEN_EXPIRE_MINUTES)
 
-        # Invalidate any existing tokens for this user
+        # Invalidate any existing unused tokens for this user
         existing = await db.execute(
             select(PasswordResetToken).where(
                 PasswordResetToken.user_id == user.id,
-                PasswordResetToken.used == False,
+                PasswordResetToken.used == False,  # noqa: E712
             )
         )
         for old_token in existing.scalars().all():
@@ -108,7 +129,7 @@ async def forgot_password(data: ForgotPasswordRequest, db: AsyncSession = Depend
 
         await send_reset_email(user.email, token)
 
-    # Always return success to prevent email enumeration
+    # Always return the same message to prevent email enumeration
     return {"message": "If an account exists with that email, you will receive a password reset link."}
 
 
@@ -118,7 +139,7 @@ async def reset_password(data: ResetPasswordRequest, db: AsyncSession = Depends(
     result = await db.execute(
         select(PasswordResetToken).where(
             PasswordResetToken.token == data.token,
-            PasswordResetToken.used == False,
+            PasswordResetToken.used == False,  # noqa: E712
         )
     )
     reset_token = result.scalar_one_or_none()
@@ -131,7 +152,6 @@ async def reset_password(data: ResetPasswordRequest, db: AsyncSession = Depends(
         await db.commit()
         raise HTTPException(status_code=400, detail="Reset token has expired")
 
-    # Update password
     user_result = await db.execute(select(User).where(User.id == reset_token.user_id))
     user = user_result.scalar_one_or_none()
 
