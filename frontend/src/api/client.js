@@ -59,6 +59,14 @@ export const profileApi = {
   getCompanyPublic: (userId) => api.get(`/profile/company/${userId}`),
 };
 
+// ── Startup Experiences ──────────────────────────────────────────────────────
+export const experiencesApi = {
+  list: () => api.get('/profile/founder/experiences'),
+  create: (data) => api.post('/profile/founder/experiences', data),
+  update: (id, data) => api.put(`/profile/founder/experiences/${id}`, data),
+  delete: (id) => api.delete(`/profile/founder/experiences/${id}`),
+};
+
 // ── Jobs ────────────────────────────────────────────────────────────────────
 export const jobsApi = {
   list: (params = {}) => {

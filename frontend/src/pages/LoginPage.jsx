@@ -27,26 +27,28 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex">
       {/* Left Panel */}
-      <div className="hidden lg:flex lg:w-1/2 bg-brand-950 text-white flex-col justify-between p-12 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 -left-20 w-96 h-96 rounded-full bg-brand-400 blur-3xl" />
-          <div className="absolute bottom-20 right-10 w-64 h-64 rounded-full bg-indigo-400 blur-3xl" />
+      <div className="hidden lg:flex lg:w-1/2 bg-slate-900 text-white flex-col justify-between p-12 relative overflow-hidden">
+        {/* Background glows */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-10 -left-24 w-96 h-96 rounded-full bg-brand-600/20 blur-3xl" />
+          <div className="absolute bottom-10 right-0 w-72 h-72 rounded-full bg-indigo-600/15 blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 rounded-full bg-brand-500/10 blur-2xl" />
         </div>
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-16">
-            <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur flex items-center justify-center">
-              <Sparkles size={20} />
+            <div className="w-9 h-9 rounded-lg bg-brand-500 flex items-center justify-center shadow-glow">
+              <Sparkles size={17} className="text-white" />
             </div>
-            <span className="text-xl font-display font-bold">PivotHire</span>
+            <span className="text-xl font-display font-bold text-white">PivotHire</span>
           </div>
           <h2 className="text-4xl font-display font-bold leading-tight mb-6">
             Where founders<br />find their next<br />chapter.
           </h2>
-          <p className="text-brand-200 text-lg max-w-md leading-relaxed">
+          <p className="text-slate-400 text-lg max-w-md leading-relaxed">
             The hiring platform built for ex-founders. Showcase your startup experience and connect with companies that value your unique perspective.
           </p>
         </div>
-        <div className="relative z-10 text-brand-300 text-sm">
+        <div className="relative z-10 text-slate-500 text-sm">
           © 2026 PivotHire. All rights reserved.
         </div>
       </div>
@@ -56,8 +58,8 @@ export default function LoginPage() {
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <div className="lg:hidden flex items-center gap-2.5 mb-10">
-            <div className="w-9 h-9 rounded-xl bg-brand-600 flex items-center justify-center">
-              <Sparkles size={18} className="text-white" />
+            <div className="w-9 h-9 rounded-lg bg-slate-900 flex items-center justify-center">
+              <Sparkles size={17} className="text-brand-400" />
             </div>
             <span className="text-lg font-display font-bold text-slate-900">PivotHire</span>
           </div>

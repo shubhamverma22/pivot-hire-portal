@@ -4,9 +4,9 @@ import { useAuth } from '../context/AuthContext';
 import { dashboardApi } from '../api/client';
 import { StatCard, StatusBadge, PlanBadge, PageLoader, EmptyState, timeAgo } from '../components/UI';
 import {
-  Briefcase, FileText, Star, Eye, CheckCircle2, XCircle,
-  ArrowRight, CreditCard, TrendingUp
+  Briefcase, FileText, Star, Eye, ArrowRight, Zap, TrendingUp, CheckCircle2,
 } from 'lucide-react';
+import clsx from 'clsx';
 
 export default function FounderDashboard() {
   const { user } = useAuth();
@@ -18,98 +18,117 @@ export default function FounderDashboard() {
   }, []);
 
   if (loading) return <PageLoader />;
-  if (!data) return null;
+  if (!data)   return null;
 
-  const plan = data.subscription?.plan || 'free';
-  const usedApps = data.applications_this_month || 0;
-  const limit = data.monthly_limit || 5;
-  const usagePercent = plan === 'premium' ? 5 : Math.min((usedApps / limit) * 100, 100);
+  const plan      = data.subscription?.plan || 'free';
+  const used      = data.applications_this_month || 0;
+  const limit     = data.monthly_limit || 5;
+  const isPremium = plan === 'premium';
+  const pct       = isPremium ? 100 : Math.min((used / limit) * 100, 100);
+  const nearLimit = !isPremium && used >= limit - 1;
+  const atLimit   = !isPremium && used >= limit;
 
   return (
-    <div className="space-y-8 animate-fade-in">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+    <div className="space-y-6 animate-fade-in">
+
+      {/* ── Header ── */}
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-display font-bold text-slate-900">
-            Welcome back, {user?.full_name?.split(' ')[0]} 👋
-          </h1>
-          <p className="text-slate-500 mt-1">Here's an overview of your job search activity.</p>
+          <p className="text-xs font-medium text-slate-400 uppercase tracking-widest mb-1">{greeting()}</p>
+          <h1 className="page-title">{user?.full_name?.split(' ')[0]} 👋</h1>
+          <p className="page-subtitle">Here's what's happening with your job search.</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5 shrink-0">
           <PlanBadge plan={plan} />
           <Link to="/jobs" className="btn-primary btn-sm">
-            Browse Jobs <ArrowRight size={14} />
+            Browse Jobs <ArrowRight size={13} />
           </Link>
         </div>
       </div>
 
-      {/* Profile completion banner */}
+      {/* ── Profile completion banner ── */}
       {data.profile && !data.profile.is_profile_complete && (
-        <div className="card p-5 border-amber-200 bg-amber-50/50 flex flex-col sm:flex-row items-start sm:items-center gap-4">
-          <div className="flex-1">
-            <p className="font-medium text-amber-800">Complete your profile to stand out</p>
-            <p className="text-sm text-amber-600">Companies see your full profile when you apply. A complete profile gets 3x more responses.</p>
+        <div className="rounded-xl border border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
+            <Zap size={17} className="text-amber-600" strokeWidth={2} />
           </div>
-          <Link to="/profile" className="btn-sm bg-amber-600 text-white hover:bg-amber-700 rounded-xl">
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-amber-900">Complete your profile to stand out</p>
+            <p className="text-xs text-amber-700 mt-0.5 leading-relaxed">
+              Companies see your full profile. A complete profile gets 3× more responses.
+            </p>
+          </div>
+          <Link to="/profile" className="btn-sm bg-amber-600 hover:bg-amber-700 text-white rounded-lg shrink-0 shadow-sm">
             Complete Profile
           </Link>
         </div>
       )}
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard icon={FileText} label="Total Applications" value={data.total_applications} accent="brand" />
-        <StatCard icon={Briefcase} label="Available Jobs" value={data.total_available_jobs} accent="emerald" />
-        <StatCard icon={Star} label="Shortlisted" value={data.status_breakdown?.shortlisted || 0} accent="amber" />
-        <StatCard icon={Eye} label="Viewed" value={data.status_breakdown?.viewed || 0} accent="slate" />
+      {/* ── Stats ── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <StatCard icon={FileText}  label="Total Applications" value={data.total_applications}               accent="brand" />
+        <StatCard icon={Briefcase} label="Jobs Available"      value={data.total_available_jobs}            accent="emerald" />
+        <StatCard icon={Star}      label="Shortlisted"         value={data.status_breakdown?.shortlisted || 0} accent="amber" />
+        <StatCard icon={Eye}       label="Profile Views"       value={data.status_breakdown?.viewed || 0}   accent="slate" />
       </div>
 
-      {/* Usage meter */}
+      {/* ── Usage meter ── */}
       <div className="card p-5">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <CreditCard size={18} className="text-brand-600" />
-            <span className="font-medium text-slate-800">Monthly Application Usage</span>
+            <TrendingUp size={14} className="text-slate-400" />
+            <span className="text-sm font-semibold text-slate-700">Monthly Application Quota</span>
           </div>
-          <span className="text-sm text-slate-500">
-            {plan === 'premium' ? (
-              <span className="text-brand-600 font-medium">Unlimited</span>
-            ) : (
-              <>{usedApps} / {limit} used</>
-            )}
+          <span className="text-xs text-slate-500">
+            {isPremium
+              ? <span className="text-brand-600 font-semibold flex items-center gap-1"><CheckCircle2 size={12} /> Unlimited</span>
+              : <><strong className={clsx('font-semibold', nearLimit ? 'text-red-600' : 'text-slate-800')}>{used}</strong>
+                <span className="text-slate-400"> / {limit} used</span></>
+            }
           </span>
         </div>
-        <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+        <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
           <div
-            className={`h-full rounded-full transition-all duration-700 ${usagePercent >= 80 ? 'bg-red-500' : 'bg-brand-500'}`}
-            style={{ width: `${usagePercent}%` }}
+            className={clsx(
+              'h-full rounded-full transition-all duration-700',
+              isPremium ? 'bg-brand-400 opacity-40 w-full' :
+              atLimit   ? 'bg-red-500' :
+              nearLimit ? 'bg-amber-500' : 'bg-brand-500'
+            )}
+            style={!isPremium ? { width: `${pct}%` } : undefined}
           />
         </div>
-        {plan === 'free' && usedApps >= limit && (
-          <div className="mt-3 flex items-center gap-2">
-            <p className="text-sm text-red-600">Monthly limit reached.</p>
-            <Link to="/subscription" className="text-sm text-brand-600 font-medium hover:underline">
+        {atLimit && (
+          <p className="mt-2.5 text-xs text-red-600 flex items-center gap-1.5">
+            Monthly limit reached.{' '}
+            <Link to="/subscription" className="font-semibold underline underline-offset-2">
               Upgrade to Premium →
             </Link>
-          </div>
+          </p>
         )}
       </div>
 
-      {/* Recent Applications */}
+      {/* ── Recent Applications ── */}
       <div>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-display font-semibold text-slate-900">Recent Applications</h2>
-          <Link to="/applications" className="text-sm text-brand-600 font-medium hover:underline flex items-center gap-1">
-            View all <ArrowRight size={14} />
+        <div className="section-header">
+          <h2 className="section-heading">Recent Applications</h2>
+          <Link to="/applications" className="text-xs text-brand-600 font-medium hover:text-brand-700 flex items-center gap-1">
+            View all <ArrowRight size={12} />
           </Link>
         </div>
+
         {data.recent_applications?.length > 0 ? (
-          <div className="space-y-3">
+          <div className="space-y-2">
             {data.recent_applications.map((app) => (
-              <div key={app.id} className="card-hover p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+              <div key={app.id} className="card p-4 flex items-center gap-4">
+                <div className="w-9 h-9 rounded-lg bg-brand-50 flex items-center justify-center shrink-0">
+                  <Briefcase size={15} className="text-brand-500" strokeWidth={1.75} />
+                </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-slate-800 truncate">{app.job?.title || 'Job'}</p>
-                  <p className="text-sm text-slate-500">{app.job?.location} · {timeAgo(app.created_at)}</p>
+                  <p className="text-sm font-semibold text-slate-800 truncate">{app.job?.title || 'Position'}</p>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    {app.job?.company?.company_name || 'Company'} · {timeAgo(app.created_at)}
+                  </p>
                 </div>
                 <StatusBadge status={app.status} />
               </div>
@@ -119,11 +138,18 @@ export default function FounderDashboard() {
           <EmptyState
             icon={FileText}
             title="No applications yet"
-            description="Start browsing jobs and apply to positions that match your skills."
-            action={<Link to="/jobs" className="btn-primary btn-sm">Browse Jobs</Link>}
+            description="Start applying to positions that match your founder background."
+            action={<Link to="/jobs" className="btn-primary btn-sm mt-1">Browse Jobs</Link>}
           />
         )}
       </div>
     </div>
   );
+}
+
+function greeting() {
+  const h = new Date().getHours();
+  if (h < 12) return 'Good morning';
+  if (h < 17) return 'Good afternoon';
+  return 'Good evening';
 }

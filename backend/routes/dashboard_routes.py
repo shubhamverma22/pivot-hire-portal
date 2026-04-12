@@ -28,7 +28,9 @@ async def founder_dashboard(
 
     # Profile
     fp_result = await db.execute(
-        select(FounderProfile).where(FounderProfile.user_id == current_user.id)
+        select(FounderProfile)
+        .options(selectinload(FounderProfile.startup_experiences))
+        .where(FounderProfile.user_id == current_user.id)
     )
     fp = fp_result.scalar_one_or_none()
     if fp:

@@ -2,11 +2,10 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
   LayoutDashboard, Briefcase, FileText, User, CreditCard,
-  PlusCircle, Users, LogOut, Menu, X, Sparkles
+  PlusCircle, Users, LogOut, Menu, X, Zap,
 } from 'lucide-react';
 import { useState } from 'react';
 import clsx from 'clsx';
-import { PlanBadge } from './UI';
 
 export default function DashboardLayout() {
   const { user, isFounder, isCompany, logout } = useAuth();
@@ -19,42 +18,47 @@ export default function DashboardLayout() {
   };
 
   const founderLinks = [
-    { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', end: true },
-    { to: '/jobs', icon: Briefcase, label: 'Browse Jobs' },
-    { to: '/applications', icon: FileText, label: 'My Applications' },
-    { to: '/profile', icon: User, label: 'My Profile' },
-    { to: '/subscription', icon: CreditCard, label: 'Subscription' },
+    { to: '/dashboard',    icon: LayoutDashboard, label: 'Dashboard',       end: true },
+    { to: '/jobs',         icon: Briefcase,       label: 'Browse Jobs' },
+    { to: '/applications', icon: FileText,        label: 'My Applications' },
+    { to: '/profile',      icon: User,            label: 'My Profile' },
+    { to: '/subscription', icon: CreditCard,      label: 'Subscription' },
   ];
 
   const companyLinks = [
-    { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', end: true },
-    { to: '/my-jobs', icon: Briefcase, label: 'Job Postings' },
-    { to: '/post-job', icon: PlusCircle, label: 'Post a Job' },
-    { to: '/candidates', icon: Users, label: 'Candidates' },
-    { to: '/company-profile', icon: User, label: 'Company Profile' },
+    { to: '/dashboard',       icon: LayoutDashboard, label: 'Dashboard',      end: true },
+    { to: '/my-jobs',         icon: Briefcase,       label: 'Job Postings' },
+    { to: '/post-job',        icon: PlusCircle,      label: 'Post a Job' },
+    { to: '/candidates',      icon: Users,           label: 'Candidates' },
+    { to: '/company-profile', icon: User,            label: 'Company Profile' },
   ];
 
   const links = isCompany ? companyLinks : founderLinks;
+  const initials = user?.full_name?.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || '?';
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
-      {/* Logo */}
-      <div className="px-5 pt-6 pb-4">
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-brand-600 flex items-center justify-center">
-            <Sparkles size={18} className="text-white" />
+
+      {/* Brand */}
+      <div className="px-5 pt-6 pb-5">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-brand-500 flex items-center justify-center shrink-0 shadow-glow">
+            <Zap size={15} className="text-white" strokeWidth={2.5} />
           </div>
           <div>
-            <h1 className="text-lg font-display font-bold text-slate-900 leading-tight">PivotHire</h1>
-            <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">
+            <p className="text-[15px] font-display font-bold text-white leading-none">PivotHire</p>
+            <p className="text-[10px] text-slate-400 font-medium uppercase tracking-widest mt-0.5">
               {isCompany ? 'Employer' : 'Founder'}
             </p>
           </div>
         </div>
       </div>
 
-      {/* Nav Links */}
-      <nav className="flex-1 px-3 py-2 space-y-0.5">
+      {/* Divider */}
+      <div className="mx-5 h-px bg-white/8 mb-2" />
+
+      {/* Navigation */}
+      <nav className="flex-1 px-3 py-3 space-y-0.5 overflow-y-auto">
         {links.map(({ to, icon: Icon, label, end }) => (
           <NavLink
             key={to}
@@ -62,31 +66,49 @@ export default function DashboardLayout() {
             end={end}
             onClick={() => setSidebarOpen(false)}
             className={({ isActive }) => clsx(
-              'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200',
+              'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150',
               isActive
-                ? 'bg-brand-50 text-brand-700 shadow-sm'
-                : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100'
+                ? 'bg-white/10 text-white'
+                : 'text-slate-400 hover:text-white hover:bg-white/6'
             )}
           >
-            <Icon size={18} />
-            {label}
+            {({ isActive }) => (
+              <>
+                <Icon
+                  size={16}
+                  strokeWidth={isActive ? 2.5 : 2}
+                  className={clsx(
+                    'shrink-0 transition-colors',
+                    isActive ? 'text-brand-400' : 'text-slate-500'
+                  )}
+                />
+                {label}
+                {isActive && (
+                  <span className="ml-auto w-1.5 h-1.5 rounded-full bg-brand-400 shrink-0" />
+                )}
+              </>
+            )}
           </NavLink>
         ))}
       </nav>
 
-      {/* User Section */}
-      <div className="border-t px-4 py-4 space-y-3">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-brand-100 flex items-center justify-center text-brand-700 font-bold text-sm">
-            {user?.full_name?.charAt(0)?.toUpperCase()}
+      {/* User footer */}
+      <div className="mx-5 h-px bg-white/8 mb-3" />
+      <div className="px-3 pb-5 space-y-1">
+        <div className="flex items-center gap-3 px-2 py-2 rounded-lg">
+          <div className="w-8 h-8 rounded-full bg-brand-500/20 ring-1 ring-brand-500/40 flex items-center justify-center text-brand-300 font-bold text-xs shrink-0">
+            {initials}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-slate-800 truncate">{user?.full_name}</p>
-            <p className="text-xs text-slate-400 truncate">{user?.email}</p>
+            <p className="text-sm font-medium text-white truncate leading-none">{user?.full_name}</p>
+            <p className="text-xs text-slate-500 truncate mt-0.5">{user?.email}</p>
           </div>
         </div>
-        <button onClick={handleLogout} className="flex items-center gap-2 text-sm text-slate-500 hover:text-red-600 transition-colors w-full px-1">
-          <LogOut size={16} />
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-2.5 px-2 py-2 w-full text-sm text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all duration-150"
+        >
+          <LogOut size={14} />
           Sign out
         </button>
       </div>
@@ -94,43 +116,53 @@ export default function DashboardLayout() {
   );
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex bg-slate-50">
+
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex lg:flex-col w-64 bg-white border-r fixed inset-y-0 left-0 z-30">
+      <aside className="hidden lg:flex lg:flex-col w-60 bg-slate-900 fixed inset-y-0 left-0 z-30">
         <SidebarContent />
       </aside>
 
-      {/* Mobile Sidebar Overlay */}
+      {/* Mobile Sidebar */}
       {sidebarOpen && (
         <div className="lg:hidden fixed inset-0 z-50">
-          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
-          <aside className="absolute left-0 top-0 bottom-0 w-72 bg-white shadow-float animate-fade-in">
-            <div className="absolute top-4 right-4">
-              <button onClick={() => setSidebarOpen(false)} className="p-1.5 rounded-lg hover:bg-slate-100">
-                <X size={20} />
-              </button>
-            </div>
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={() => setSidebarOpen(false)}
+          />
+          <aside className="absolute left-0 top-0 bottom-0 w-64 bg-slate-900 shadow-float animate-slide-up">
+            <button
+              onClick={() => setSidebarOpen(false)}
+              className="absolute top-4 right-3 p-1.5 rounded-lg hover:bg-white/10 transition-colors"
+            >
+              <X size={18} className="text-slate-400" />
+            </button>
             <SidebarContent />
           </aside>
         </div>
       )}
 
-      {/* Main Content */}
-      <main className="flex-1 lg:ml-64">
-        {/* Mobile Header */}
-        <div className="lg:hidden sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b px-4 py-3 flex items-center gap-3">
-          <button onClick={() => setSidebarOpen(true)} className="p-1.5 rounded-lg hover:bg-slate-100">
-            <Menu size={22} />
+      {/* Main */}
+      <main className="flex-1 lg:ml-60 min-w-0">
+
+        {/* Mobile top bar */}
+        <div className="lg:hidden sticky top-0 z-20 bg-white/90 backdrop-blur-md border-b border-slate-200 px-4 py-3 flex items-center gap-3">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+          >
+            <Menu size={20} className="text-slate-600" />
           </button>
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-brand-600 flex items-center justify-center">
-              <Sparkles size={14} className="text-white" />
+            <div className="w-6 h-6 rounded-md bg-slate-900 flex items-center justify-center">
+              <Zap size={12} className="text-brand-400" strokeWidth={2.5} />
             </div>
-            <span className="font-display font-bold text-slate-900">PivotHire</span>
+            <span className="font-display font-bold text-slate-900 text-sm">PivotHire</span>
           </div>
         </div>
 
-        <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        {/* Page content */}
+        <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto">
           <Outlet />
         </div>
       </main>

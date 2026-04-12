@@ -1,8 +1,8 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, ConfigDict
 from typing import Optional
-from datetime import datetime, date
+from datetime import datetime
 from uuid import UUID
-from models import UserRole, SubscriptionPlan, JobType, ApplicationStatus
+from models import UserRole, SubscriptionPlan, JobType, ApplicationStatus, StartupStatus
 
 
 # ── Auth ───────────────────────────────────────────────────────────────────────
@@ -26,7 +26,7 @@ class LoginRequest(BaseModel):
 
 
 class GoogleAuthRequest(BaseModel):
-    token: str  # Google ID token
+    token: str
     role: UserRole = UserRole.FOUNDER
     company_name: Optional[str] = None
 
@@ -40,6 +40,8 @@ class Token(BaseModel):
 # ── User ───────────────────────────────────────────────────────────────────────
 
 class UserOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: UUID
     email: str
     full_name: str
@@ -49,8 +51,40 @@ class UserOut(BaseModel):
     auth_provider: str = "email"
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+
+# ── Startup Experience ─────────────────────────────────────────────────────────
+
+class StartupExperienceCreate(BaseModel):
+    startup_name: Optional[str] = None
+    startup_link: Optional[str] = None
+    startup_role: Optional[str] = None
+    field_expertise: Optional[str] = None
+    industry: Optional[str] = None
+    industry_category: Optional[str] = None
+    startup_status: Optional[StartupStatus] = None
+    startup_description: Optional[str] = None
+    stage_description: Optional[str] = None
+    startup_duration: Optional[str] = None
+    is_primary: bool = False
+
+
+class StartupExperienceOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    founder_profile_id: UUID
+    startup_name: Optional[str] = None
+    startup_link: Optional[str] = None
+    startup_role: Optional[str] = None
+    field_expertise: Optional[str] = None
+    industry: Optional[str] = None
+    industry_category: Optional[str] = None
+    startup_status: Optional[StartupStatus] = None
+    startup_description: Optional[str] = None
+    stage_description: Optional[str] = None
+    startup_duration: Optional[str] = None
+    is_primary: bool = False
+    created_at: datetime
 
 
 # ── Founder Profile ────────────────────────────────────────────────────────────
@@ -58,12 +92,11 @@ class UserOut(BaseModel):
 class FounderProfileCreate(BaseModel):
     location: Optional[str] = None
     phone: Optional[str] = None
+    headline: Optional[str] = None
     bio: Optional[str] = None
-    startup_name: Optional[str] = None
-    startup_role: Optional[str] = None
-    startup_duration: Optional[str] = None
-    startup_description: Optional[str] = None
+    avatar_url: Optional[str] = None
     linkedin_url: Optional[str] = None
+    github_url: Optional[str] = None
     resume_url: Optional[str] = None
     portfolio_url: Optional[str] = None
     skills: Optional[str] = None
@@ -72,26 +105,25 @@ class FounderProfileCreate(BaseModel):
 
 
 class FounderProfileOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: UUID
     user_id: UUID
     location: Optional[str] = None
     phone: Optional[str] = None
+    headline: Optional[str] = None
     bio: Optional[str] = None
-    startup_name: Optional[str] = None
-    startup_role: Optional[str] = None
-    startup_duration: Optional[str] = None
-    startup_description: Optional[str] = None
+    avatar_url: Optional[str] = None
     linkedin_url: Optional[str] = None
+    github_url: Optional[str] = None
     resume_url: Optional[str] = None
     portfolio_url: Optional[str] = None
     skills: Optional[str] = None
     experience_years: Optional[int] = None
     desired_roles: Optional[str] = None
     is_profile_complete: bool = False
+    startup_experiences: list[StartupExperienceOut] = []
     created_at: datetime
-
-    class Config:
-        from_attributes = True
 
 
 # ── Company Profile ────────────────────────────────────────────────────────────
@@ -101,30 +133,33 @@ class CompanyProfileCreate(BaseModel):
     logo_url: Optional[str] = None
     website: Optional[str] = None
     industry: Optional[str] = None
+    category: Optional[str] = None
     company_size: Optional[str] = None
     location: Optional[str] = None
     description: Optional[str] = None
 
 
 class CompanyProfileOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: UUID
     user_id: UUID
     company_name: str
     logo_url: Optional[str] = None
     website: Optional[str] = None
     industry: Optional[str] = None
+    category: Optional[str] = None
     company_size: Optional[str] = None
     location: Optional[str] = None
     description: Optional[str] = None
     created_at: datetime
 
-    class Config:
-        from_attributes = True
-
 
 # ── Subscription ───────────────────────────────────────────────────────────────
 
 class SubscriptionOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: UUID
     plan: SubscriptionPlan
     is_active: bool
@@ -132,9 +167,6 @@ class SubscriptionOut(BaseModel):
     monthly_limit: int = 5
     current_period_end: Optional[datetime] = None
     created_at: datetime
-
-    class Config:
-        from_attributes = True
 
 
 class CreateCheckoutRequest(BaseModel):
@@ -167,6 +199,7 @@ class JobCreate(BaseModel):
     location: str = Field(min_length=1, max_length=255)
     salary_min: Optional[int] = None
     salary_max: Optional[int] = None
+    salary_disclosed: bool = True
     currency: str = "INR"
     description: str = Field(min_length=10)
     requirements: Optional[str] = None
@@ -179,6 +212,7 @@ class JobUpdate(BaseModel):
     location: Optional[str] = None
     salary_min: Optional[int] = None
     salary_max: Optional[int] = None
+    salary_disclosed: Optional[bool] = None
     currency: Optional[str] = None
     description: Optional[str] = None
     requirements: Optional[str] = None
@@ -187,26 +221,27 @@ class JobUpdate(BaseModel):
 
 
 class JobOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: UUID
     title: str
     role_type: JobType
     location: str
     salary_min: Optional[int] = None
     salary_max: Optional[int] = None
+    salary_disclosed: bool = True
     currency: str = "INR"
     description: str
     requirements: Optional[str] = None
     skills_required: Optional[str] = None
     is_active: bool
     company_user_id: UUID
+    # These are set manually by route helpers, not from ORM directly
     company: Optional[CompanyProfileOut] = None
     application_count: int = 0
     has_applied: bool = False
     created_at: datetime
     updated_at: datetime
-
-    class Config:
-        from_attributes = True
 
 
 # ── Application ────────────────────────────────────────────────────────────────
@@ -223,6 +258,8 @@ class ApplicationUpdate(BaseModel):
 
 
 class ApplicationOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: UUID
     status: ApplicationStatus
     cover_letter: Optional[str] = None
@@ -230,14 +267,12 @@ class ApplicationOut(BaseModel):
     notes: Optional[str] = None
     candidate_id: UUID
     job_id: UUID
+    # These are set manually by _enrich_application, not from ORM directly
     candidate: Optional[UserOut] = None
     candidate_profile: Optional[FounderProfileOut] = None
     job: Optional[JobOut] = None
     created_at: datetime
     updated_at: datetime
-
-    class Config:
-        from_attributes = True
 
 
 # ── Dashboard ──────────────────────────────────────────────────────────────────
@@ -265,5 +300,5 @@ class CompanyDashboard(BaseModel):
     recent_applicants: list[ApplicationOut] = []
 
 
-# Forward ref resolution
+# Required for forward reference in Token.user → UserOut
 Token.model_rebuild()

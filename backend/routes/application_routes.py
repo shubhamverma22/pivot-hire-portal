@@ -51,14 +51,16 @@ async def _check_subscription_limit(db: AsyncSession, user: User):
 
 
 async def _enrich_application(db: AsyncSession, app: Application) -> ApplicationOut:
-    """Add candidate profile and job info."""
+    """Add candidate user info, founder profile, and job info to an application."""
     out = ApplicationOut.model_validate(app)
 
-    # Candidate info
     if app.candidate:
         out.candidate = UserOut.model_validate(app.candidate)
+        # Must eagerly load startup_experiences — FounderProfileOut includes them
         fp_result = await db.execute(
-            select(FounderProfile).where(FounderProfile.user_id == app.candidate_id)
+            select(FounderProfile)
+            .options(selectinload(FounderProfile.startup_experiences))
+            .where(FounderProfile.user_id == app.candidate_id)
         )
         fp = fp_result.scalar_one_or_none()
         if fp:

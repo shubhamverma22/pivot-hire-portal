@@ -31,11 +31,11 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-slate-50 via-white to-brand-50/30">
+    <div className="min-h-screen flex items-center justify-center p-6 bg-slate-50">
       <div className="w-full max-w-lg">
         <div className="flex items-center gap-2.5 justify-center mb-8">
-          <div className="w-9 h-9 rounded-xl bg-brand-600 flex items-center justify-center">
-            <Sparkles size={18} className="text-white" />
+          <div className="w-9 h-9 rounded-lg bg-slate-900 flex items-center justify-center shadow-sm">
+            <Sparkles size={17} className="text-brand-400" />
           </div>
           <span className="text-lg font-display font-bold text-slate-900">PivotHire</span>
         </div>
