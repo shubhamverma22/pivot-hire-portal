@@ -148,6 +148,9 @@ aside ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
 .nav-dot {
   width: 6px; height: 6px;
   border-radius: 50%;
-  background: #818cf8;
-  box-shadow: 0 0 6px rgba(129,140,248,0.7);
+  background: #FF6600;
+  box-shadow: 0 0 6px rgba(255,102,0,0.7);
 }
+
+/* ── Smooth scrolling ── */
+html { scroll-behavior: smooth; }

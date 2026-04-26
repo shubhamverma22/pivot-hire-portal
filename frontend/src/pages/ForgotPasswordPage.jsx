@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { passwordApi } from '../api/client';
-import { Sparkles, ArrowLeft, Mail } from 'lucide-react';
+import { ArrowLeft, Mail } from 'lucide-react';
+import { PivotHireLogo } from '../components/Logo';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
@@ -24,22 +25,23 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-slate-50 via-white to-brand-50/30">
-      <div className="w-full max-w-md">
-        <div className="flex items-center gap-2.5 justify-center mb-8">
-          <div className="w-9 h-9 rounded-xl bg-brand-600 flex items-center justify-center">
-            <Sparkles size={18} className="text-white" />
-          </div>
-          <span className="text-lg font-display font-bold text-slate-900">PivotHire</span>
+    <div className="min-h-screen flex items-center justify-center p-6" style={{ background: '#0A0F08' }}>
+      <div className="fixed inset-0 pointer-events-none" style={{
+        background: 'radial-gradient(ellipse 60% 50% at 50% 0%, rgba(255,102,0,0.1) 0%, transparent 60%)'
+      }} />
+
+      <div className="w-full max-w-md relative z-10">
+        <div className="flex items-center justify-center mb-8">
+          <PivotHireLogo size={28} />
         </div>
 
-        <div className="card p-8">
+        <div className="bg-white rounded-2xl p-8 shadow-float">
           {sent ? (
             <div className="text-center">
               <div className="w-14 h-14 rounded-full bg-brand-100 flex items-center justify-center mx-auto mb-4">
                 <Mail size={24} className="text-brand-600" />
               </div>
-              <h1 className="text-2xl font-display font-bold text-slate-900 mb-2">Check your email</h1>
+              <h1 className="text-2xl font-display font-extrabold text-slate-900 mb-2 tracking-tight">Check your email</h1>
               <p className="text-slate-500 mb-6">
                 If an account exists with <strong>{email}</strong>, we've sent a password reset link.
                 Please check your inbox and spam folder.
@@ -50,7 +52,7 @@ export default function ForgotPasswordPage() {
             </div>
           ) : (
             <>
-              <h1 className="text-2xl font-display font-bold text-slate-900 text-center mb-2">
+              <h1 className="text-2xl font-display font-extrabold text-slate-900 text-center mb-2 tracking-tight">
                 Forgot your password?
               </h1>
               <p className="text-slate-500 text-center mb-6">
@@ -89,6 +91,10 @@ export default function ForgotPasswordPage() {
             </>
           )}
         </div>
+
+        <p className="mt-6 text-center">
+          <Link to="/" className="text-sm hover:text-white" style={{ color: 'rgba(248,245,240,0.52)' }}>← Back to home</Link>
+        </p>
       </div>
     </div>
   );

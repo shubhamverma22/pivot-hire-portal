@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Sparkles, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import { PivotHireLogo } from '../components/Logo';
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -26,45 +27,65 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex">
-      {/* Left Panel */}
-      <div className="hidden lg:flex lg:w-1/2 bg-slate-900 text-white flex-col justify-between p-12 relative overflow-hidden">
-        {/* Background glows */}
+      {/* Left Panel — dark branded */}
+      <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-12 relative overflow-hidden"
+        style={{ background: '#0A0F08' }}>
+        {/* Background effects */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-10 -left-24 w-96 h-96 rounded-full bg-brand-600/20 blur-3xl" />
-          <div className="absolute bottom-10 right-0 w-72 h-72 rounded-full bg-indigo-600/15 blur-3xl" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 rounded-full bg-brand-500/10 blur-2xl" />
+          <div className="absolute inset-0" style={{
+            background: 'radial-gradient(ellipse 80% 60% at 30% 50%, rgba(28,60,10,0.5) 0%, transparent 65%)'
+          }} />
+          <div className="absolute inset-0" style={{
+            backgroundImage: 'linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)',
+            backgroundSize: '60px 60px'
+          }} />
         </div>
+
         <div className="relative z-10">
-          <div className="flex items-center gap-3 mb-16">
-            <div className="w-9 h-9 rounded-lg bg-brand-500 flex items-center justify-center shadow-glow">
-              <Sparkles size={17} className="text-white" />
-            </div>
-            <span className="text-xl font-display font-bold text-white">PivotHire</span>
+          <PivotHireLogo size={28} />
+        </div>
+
+        <div className="relative z-10" style={{ maxWidth: 400 }}>
+          <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-wider mb-6"
+            style={{ background: 'rgba(255,102,0,0.1)', border: '1px solid rgba(255,102,0,0.3)', color: '#FF6600', letterSpacing: '1px' }}>
+            The Relentless Registry
           </div>
-          <h2 className="text-4xl font-display font-bold leading-tight mb-6">
-            Where founders<br />find their next<br />chapter.
-          </h2>
-          <p className="text-slate-400 text-lg max-w-md leading-relaxed">
-            The hiring platform built for ex-founders. Showcase your startup experience and connect with companies that value your unique perspective.
+          <h1 className="font-display text-[42px] font-extrabold leading-[1.12] tracking-tight mb-5"
+            style={{ color: '#F8F5F0', letterSpacing: '-1.5px' }}>
+            "Startups don't just need employees. They need believers."
+          </h1>
+          <p className="text-base leading-relaxed" style={{ color: 'rgba(248,245,240,0.52)' }}>
+            The curated marketplace for ex-founders and the startups that need them most.
           </p>
+
+          {/* Testimonial */}
+          <div className="mt-10 rounded-2xl p-6" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <p className="text-sm leading-relaxed mb-4 italic" style={{ color: '#F8F5F0' }}>
+              "PivotHire got me a role at a Series A in 9 days. They matched my chaos-handling skills perfectly—no resume needed."
+            </p>
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white"
+                style={{ background: 'linear-gradient(135deg, #1C3C0A, #FF6600)' }}>R</div>
+              <div>
+                <div className="text-sm font-semibold" style={{ color: '#F8F5F0' }}>Rahul M.</div>
+                <div className="text-xs" style={{ color: 'rgba(248,245,240,0.52)' }}>Ex-founder → Head of Growth, Fintech startup</div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="relative z-10 text-slate-500 text-sm">
-          © 2026 PivotHire. All rights reserved.
-        </div>
+
+        <p className="relative z-10 text-sm" style={{ color: 'rgba(248,245,240,0.52)' }}>© 2026 PivotHire</p>
       </div>
 
-      {/* Right Panel - Form */}
-      <div className="flex-1 flex items-center justify-center p-6 sm:p-12">
+      {/* Right Panel — Form */}
+      <div className="flex-1 flex items-center justify-center p-6 sm:p-12 bg-white">
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <div className="lg:hidden flex items-center gap-2.5 mb-10">
-            <div className="w-9 h-9 rounded-lg bg-slate-900 flex items-center justify-center">
-              <Sparkles size={17} className="text-brand-400" />
-            </div>
-            <span className="text-lg font-display font-bold text-slate-900">PivotHire</span>
+            <PivotHireLogo size={24} dark />
           </div>
 
-          <h1 className="text-3xl font-display font-bold text-slate-900 mb-2">Welcome back</h1>
+          <h1 className="text-3xl font-display font-extrabold text-slate-900 mb-2 tracking-tight">Welcome back</h1>
           <p className="text-slate-500 mb-8">Sign in to your account to continue.</p>
 
           {error && (
@@ -105,8 +126,8 @@ export default function LoginPage() {
           </div>
 
           {/* Demo credentials */}
-          <div className="mt-8 p-4 bg-slate-50 rounded-xl border border-slate-200">
-            <p className="text-xs font-medium text-slate-500 mb-2">Demo Credentials</p>
+          <div className="mt-8 p-4 rounded-xl" style={{ background: '#FFF7ED', border: '1px solid #FFEDD5' }}>
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Demo Credentials</p>
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div>
                 <p className="font-medium text-slate-700">Founder</p>
@@ -119,6 +140,10 @@ export default function LoginPage() {
             </div>
             <p className="text-xs text-slate-400 mt-2">Password: password123</p>
           </div>
+
+          <p className="mt-6 text-center">
+            <Link to="/" className="text-sm text-slate-400 hover:text-slate-600">← Back to home</Link>
+          </p>
         </div>
       </div>
     </div>

@@ -2,10 +2,11 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
   LayoutDashboard, Briefcase, FileText, User, CreditCard,
-  PlusCircle, Users, LogOut, Menu, X, Zap,
+  PlusCircle, Users, LogOut, Menu, X,
 } from 'lucide-react';
 import { useState } from 'react';
 import clsx from 'clsx';
+import { PivotHireLogoInline } from './Logo';
 
 export default function DashboardLayout() {
   const { user, isFounder, isCompany, logout } = useAuth();
@@ -42,16 +43,12 @@ export default function DashboardLayout() {
       {/* Brand */}
       <div className="px-5 pt-6 pb-5">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-brand-500 flex items-center justify-center shrink-0 shadow-glow">
-            <Zap size={15} className="text-white" strokeWidth={2.5} />
-          </div>
-          <div>
-            <p className="text-[15px] font-display font-bold text-white leading-none">PivotHire</p>
-            <p className="text-[10px] text-slate-400 font-medium uppercase tracking-widest mt-0.5">
-              {isCompany ? 'Employer' : 'Founder'}
-            </p>
-          </div>
+          <PivotHireLogoInline size={14} />
         </div>
+        <p className="text-[10px] font-medium uppercase tracking-widest mt-2 ml-0.5"
+          style={{ color: 'rgba(248,245,240,0.4)' }}>
+          {isCompany ? 'Employer' : 'Founder'}
+        </p>
       </div>
 
       {/* Divider */}
@@ -68,7 +65,7 @@ export default function DashboardLayout() {
             className={({ isActive }) => clsx(
               'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150',
               isActive
-                ? 'bg-white/10 text-white'
+                ? 'bg-brand-500/15 text-white'
                 : 'text-slate-400 hover:text-white hover:bg-white/6'
             )}
           >
@@ -96,7 +93,8 @@ export default function DashboardLayout() {
       <div className="mx-5 h-px bg-white/8 mb-3" />
       <div className="px-3 pb-5 space-y-1">
         <div className="flex items-center gap-3 px-2 py-2 rounded-lg">
-          <div className="w-8 h-8 rounded-full bg-brand-500/20 ring-1 ring-brand-500/40 flex items-center justify-center text-brand-300 font-bold text-xs shrink-0">
+          <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
+            style={{ background: 'linear-gradient(135deg, #1C3C0A, #FF6600)', color: '#fff' }}>
             {initials}
           </div>
           <div className="flex-1 min-w-0">
@@ -119,7 +117,8 @@ export default function DashboardLayout() {
     <div className="min-h-screen flex bg-slate-50">
 
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex lg:flex-col w-60 bg-slate-900 fixed inset-y-0 left-0 z-30">
+      <aside className="hidden lg:flex lg:flex-col w-60 fixed inset-y-0 left-0 z-30"
+        style={{ background: '#0A0F08' }}>
         <SidebarContent />
       </aside>
 
@@ -130,7 +129,8 @@ export default function DashboardLayout() {
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() => setSidebarOpen(false)}
           />
-          <aside className="absolute left-0 top-0 bottom-0 w-64 bg-slate-900 shadow-float animate-slide-up">
+          <aside className="absolute left-0 top-0 bottom-0 w-64 shadow-float animate-slide-up"
+            style={{ background: '#0A0F08' }}>
             <button
               onClick={() => setSidebarOpen(false)}
               className="absolute top-4 right-3 p-1.5 rounded-lg hover:bg-white/10 transition-colors"
@@ -153,12 +153,7 @@ export default function DashboardLayout() {
           >
             <Menu size={20} className="text-slate-600" />
           </button>
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-md bg-slate-900 flex items-center justify-center">
-              <Zap size={12} className="text-brand-400" strokeWidth={2.5} />
-            </div>
-            <span className="font-display font-bold text-slate-900 text-sm">PivotHire</span>
-          </div>
+          <PivotHireLogoInline size={12} dark />
         </div>
 
         {/* Page content */}

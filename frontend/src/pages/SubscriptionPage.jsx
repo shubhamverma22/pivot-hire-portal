@@ -66,7 +66,7 @@ export default function SubscriptionPage() {
         description: res.description,
         currency: res.currency,
         prefill: { email: res.user_email, name: res.user_name },
-        theme: { color: '#4f46e5' },
+        theme: { color: '#FF6600' },
         handler: async (response) => {
           try {
             await subscriptionApi.verify({

@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Sparkles, ArrowRight, Rocket, Building2 } from 'lucide-react';
+import { ArrowRight, Rocket, Building2 } from 'lucide-react';
+import { PivotHireLogo } from '../components/Logo';
 import clsx from 'clsx';
 
 export default function RegisterPage() {
@@ -31,17 +32,25 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-slate-50">
-      <div className="w-full max-w-lg">
-        <div className="flex items-center gap-2.5 justify-center mb-8">
-          <div className="w-9 h-9 rounded-lg bg-slate-900 flex items-center justify-center shadow-sm">
-            <Sparkles size={17} className="text-brand-400" />
-          </div>
-          <span className="text-lg font-display font-bold text-slate-900">PivotHire</span>
+    <div className="min-h-screen flex items-center justify-center p-6" style={{ background: '#0A0F08' }}>
+      {/* Background effects */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute inset-0" style={{
+          background: 'radial-gradient(ellipse 60% 50% at 50% 0%, rgba(255,102,0,0.12) 0%, transparent 60%), radial-gradient(ellipse 40% 40% at 80% 80%, rgba(28,60,10,0.3) 0%, transparent 50%)'
+        }} />
+        <div className="absolute inset-0" style={{
+          backgroundImage: 'linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)',
+          backgroundSize: '60px 60px'
+        }} />
+      </div>
+
+      <div className="w-full max-w-lg relative z-10">
+        <div className="flex items-center justify-center mb-8">
+          <PivotHireLogo size={28} />
         </div>
 
-        <div className="card p-8">
-          <h1 className="text-2xl font-display font-bold text-slate-900 text-center mb-2">Create your account</h1>
+        <div className="bg-white rounded-2xl p-8 shadow-float">
+          <h1 className="text-2xl font-display font-extrabold text-slate-900 text-center mb-2 tracking-tight">Create your account</h1>
           <p className="text-slate-500 text-center mb-6">Join PivotHire and start your next chapter.</p>
 
           {/* Role Selector */}
@@ -126,6 +135,10 @@ export default function RegisterPage() {
             <Link to="/login" className="text-brand-600 font-medium hover:text-brand-700">Sign in</Link>
           </p>
         </div>
+
+        <p className="mt-6 text-center">
+          <Link to="/" className="text-sm hover:text-white" style={{ color: 'rgba(248,245,240,0.52)' }}>← Back to home</Link>
+        </p>
       </div>
     </div>
   );

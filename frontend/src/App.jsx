@@ -4,6 +4,7 @@ import DashboardLayout from './components/DashboardLayout';
 import { PageLoader } from './components/UI';
 
 // Pages
+import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import FounderDashboard from './pages/FounderDashboard';
@@ -65,6 +66,9 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
+          {/* Landing Page */}
+          <Route path="/" element={<LandingPage />} />
+
           {/* Guest Routes */}
           <Route path="/login" element={<GuestRoute><LoginPage /></GuestRoute>} />
           <Route path="/register" element={<GuestRoute><RegisterPage /></GuestRoute>} />
@@ -89,7 +93,7 @@ export default function App() {
           </Route>
 
           {/* Catch-all */}
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
