@@ -4,6 +4,9 @@ import { useAuth } from '../context/AuthContext';
 import { ArrowRight } from 'lucide-react';
 import { PivotHireLogo } from '../components/Logo';
 
+const HEAD = "'Georgia', 'Times New Roman', serif";
+const BODY = "'DM Sans', sans-serif";
+
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -29,7 +32,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex">
       {/* Left Panel — dark branded */}
       <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-12 relative overflow-hidden"
-        style={{ background: '#0A0F08' }}>
+        style={{ background: '#0A0F08', fontFamily: BODY }}>
         {/* Background effects */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute inset-0" style={{
@@ -47,28 +50,28 @@ export default function LoginPage() {
 
         <div className="relative z-10" style={{ maxWidth: 400 }}>
           <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-wider mb-6"
-            style={{ background: 'rgba(255,102,0,0.1)', border: '1px solid rgba(255,102,0,0.3)', color: '#FF6600', letterSpacing: '1px' }}>
+            style={{ background: 'rgba(255,102,0,0.1)', border: '1px solid rgba(255,102,0,0.3)', color: '#FF6600', letterSpacing: '1px', fontFamily: BODY }}>
             The Relentless Registry
           </div>
-          <h1 className="font-display text-[42px] font-extrabold leading-[1.12] tracking-tight mb-5"
-            style={{ color: '#F8F5F0', letterSpacing: '-1.5px' }}>
+          <h1 className="text-[42px] font-extrabold leading-[1.12] tracking-tight mb-5"
+            style={{ color: '#F8F5F0', letterSpacing: '-1.5px', fontFamily: HEAD }}>
             "Startups don't just need employees. They need believers."
           </h1>
-          <p className="text-base leading-relaxed" style={{ color: 'rgba(248,245,240,0.52)' }}>
+          <p className="text-base leading-relaxed" style={{ color: 'rgba(248,245,240,0.52)', fontFamily: BODY }}>
             The curated marketplace for ex-founders and the startups that need them most.
           </p>
 
           {/* Testimonial */}
           <div className="mt-10 rounded-2xl p-6" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}>
-            <p className="text-sm leading-relaxed mb-4 italic" style={{ color: '#F8F5F0' }}>
+            <p className="text-sm leading-relaxed mb-4 italic" style={{ color: '#F8F5F0', fontFamily: HEAD }}>
               "PivotHire got me a role at a Series A in 9 days. They matched my chaos-handling skills perfectly—no resume needed."
             </p>
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white"
                 style={{ background: 'linear-gradient(135deg, #1C3C0A, #FF6600)' }}>R</div>
               <div>
-                <div className="text-sm font-semibold" style={{ color: '#F8F5F0' }}>Rahul M.</div>
-                <div className="text-xs" style={{ color: 'rgba(248,245,240,0.52)' }}>Ex-founder → Head of Growth, Fintech startup</div>
+                <div className="text-sm font-semibold" style={{ color: '#F8F5F0', fontFamily: BODY }}>Rahul M.</div>
+                <div className="text-xs" style={{ color: 'rgba(248,245,240,0.52)', fontFamily: BODY }}>Ex-founder → Head of Growth, Fintech startup</div>
               </div>
             </div>
           </div>
@@ -78,15 +81,15 @@ export default function LoginPage() {
       </div>
 
       {/* Right Panel — Form */}
-      <div className="flex-1 flex items-center justify-center p-6 sm:p-12 bg-white">
+      <div className="flex-1 flex items-center justify-center p-6 sm:p-12 bg-white" style={{ fontFamily: BODY }}>
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <div className="lg:hidden flex items-center gap-2.5 mb-10">
             <PivotHireLogo size={24} dark />
           </div>
 
-          <h1 className="text-3xl font-display font-extrabold text-slate-900 mb-2 tracking-tight">Welcome back</h1>
-          <p className="text-slate-500 mb-8">Sign in to your account to continue.</p>
+          <h1 className="text-3xl font-extrabold text-slate-900 mb-2 tracking-tight" style={{ fontFamily: HEAD }}>Welcome back</h1>
+          <p className="text-slate-500 mb-8" style={{ fontFamily: BODY }}>Sign in to your account to continue.</p>
 
           {error && (
             <div className="mb-6 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">

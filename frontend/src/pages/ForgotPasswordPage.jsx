@@ -4,6 +4,9 @@ import { passwordApi } from '../api/client';
 import { ArrowLeft, Mail } from 'lucide-react';
 import { PivotHireLogo } from '../components/Logo';
 
+const HEAD = "'Georgia', 'Times New Roman', serif";
+const BODY = "'DM Sans', sans-serif";
+
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
@@ -25,7 +28,7 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6" style={{ background: '#0A0F08' }}>
+    <div className="min-h-screen flex items-center justify-center p-6" style={{ background: '#0A0F08', fontFamily: BODY }}>
       <div className="fixed inset-0 pointer-events-none" style={{
         background: 'radial-gradient(ellipse 60% 50% at 50% 0%, rgba(255,102,0,0.1) 0%, transparent 60%)'
       }} />
@@ -41,7 +44,7 @@ export default function ForgotPasswordPage() {
               <div className="w-14 h-14 rounded-full bg-brand-100 flex items-center justify-center mx-auto mb-4">
                 <Mail size={24} className="text-brand-600" />
               </div>
-              <h1 className="text-2xl font-display font-extrabold text-slate-900 mb-2 tracking-tight">Check your email</h1>
+              <h1 className="text-2xl font-extrabold text-slate-900 mb-2 tracking-tight" style={{ fontFamily: HEAD }}>Check your email</h1>
               <p className="text-slate-500 mb-6">
                 If an account exists with <strong>{email}</strong>, we've sent a password reset link.
                 Please check your inbox and spam folder.
@@ -52,7 +55,7 @@ export default function ForgotPasswordPage() {
             </div>
           ) : (
             <>
-              <h1 className="text-2xl font-display font-extrabold text-slate-900 text-center mb-2 tracking-tight">
+              <h1 className="text-2xl font-extrabold text-slate-900 text-center mb-2 tracking-tight" style={{ fontFamily: HEAD }}>
                 Forgot your password?
               </h1>
               <p className="text-slate-500 text-center mb-6">

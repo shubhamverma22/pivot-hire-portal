@@ -4,6 +4,9 @@ import { passwordApi } from '../api/client';
 import { ArrowRight, CheckCircle, AlertCircle } from 'lucide-react';
 import { PivotHireLogo } from '../components/Logo';
 
+const HEAD = "'Georgia', 'Times New Roman', serif";
+const BODY = "'DM Sans', sans-serif";
+
 export default function ResetPasswordPage() {
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
@@ -41,7 +44,7 @@ export default function ResetPasswordPage() {
 
   if (!token) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6" style={{ background: '#0A0F08' }}>
+      <div className="min-h-screen flex items-center justify-center p-6" style={{ background: '#0A0F08', fontFamily: BODY }}>
         <div className="fixed inset-0 pointer-events-none" style={{
           background: 'radial-gradient(ellipse 60% 50% at 50% 0%, rgba(255,102,0,0.1) 0%, transparent 60%)'
         }} />
@@ -50,7 +53,7 @@ export default function ResetPasswordPage() {
             <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
               <AlertCircle size={24} className="text-red-600" />
             </div>
-            <h1 className="text-2xl font-display font-extrabold text-slate-900 mb-2 tracking-tight">Invalid link</h1>
+            <h1 className="text-2xl font-extrabold text-slate-900 mb-2 tracking-tight" style={{ fontFamily: HEAD }}>Invalid link</h1>
             <p className="text-slate-500 mb-6">
               This password reset link is invalid or incomplete. Please request a new one.
             </p>
@@ -64,7 +67,7 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6" style={{ background: '#0A0F08' }}>
+    <div className="min-h-screen flex items-center justify-center p-6" style={{ background: '#0A0F08', fontFamily: BODY }}>
       <div className="fixed inset-0 pointer-events-none" style={{
         background: 'radial-gradient(ellipse 60% 50% at 50% 0%, rgba(255,102,0,0.1) 0%, transparent 60%)'
       }} />
@@ -80,7 +83,7 @@ export default function ResetPasswordPage() {
               <div className="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
                 <CheckCircle size={24} className="text-emerald-600" />
               </div>
-              <h1 className="text-2xl font-display font-extrabold text-slate-900 mb-2 tracking-tight">Password reset!</h1>
+              <h1 className="text-2xl font-extrabold text-slate-900 mb-2 tracking-tight" style={{ fontFamily: HEAD }}>Password reset!</h1>
               <p className="text-slate-500 mb-6">
                 Your password has been updated successfully. You can now sign in with your new password.
               </p>
@@ -90,7 +93,7 @@ export default function ResetPasswordPage() {
             </div>
           ) : (
             <>
-              <h1 className="text-2xl font-display font-extrabold text-slate-900 text-center mb-2 tracking-tight">
+              <h1 className="text-2xl font-extrabold text-slate-900 text-center mb-2 tracking-tight" style={{ fontFamily: HEAD }}>
                 Set new password
               </h1>
               <p className="text-slate-500 text-center mb-6">

@@ -91,7 +91,7 @@ const AnimatedStat = ({ num, suffix, label, delay = 0 }) => {
   const count = useCounter(num, 1600, vis);
   return (
     <div ref={ref} style={{ textAlign:'center', opacity: vis ? 1 : 0, transform: vis ? 'translateY(0)' : 'translateY(16px)', transition:`opacity 0.5s ${delay/1000}s ease, transform 0.5s ${delay/1000}s ease` }}>
-      <div style={{ fontFamily:'Syne, sans-serif', fontSize:26, fontWeight:700, color:T.white }}>
+      <div style={{ fontFamily:"Georgia, 'Times New Roman', serif", fontSize:26, fontWeight:700, color:T.white }}>
         {num === 0 ? '0' : count}{suffix}
       </div>
       <div style={{ fontSize:13, color:T.muted, marginTop:3 }}>{label}</div>
@@ -141,7 +141,7 @@ const WhyCard = ({ icon, old, new_, desc }) => {
         <Icon d={icon} size={20} />
       </div>
       <span style={{ fontSize:13, color:T.textMuted, textDecoration:'line-through', display:'block', marginBottom:6 }}>{old}</span>
-      <span style={{ fontFamily:'Syne, sans-serif', fontSize:20, fontWeight:700, color:T.textDark, display:'block', marginBottom:10 }}>{new_}</span>
+      <span style={{ fontFamily:"Georgia, 'Times New Roman', serif", fontSize:20, fontWeight:700, color:T.textDark, display:'block', marginBottom:10 }}>{new_}</span>
       <p style={{ fontSize:14, color:T.textMuted, lineHeight:1.65 }}>{desc}</p>
     </div>
   );
@@ -157,14 +157,14 @@ const RegistryCard = ({ onNavigate }) => {
           <svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill={T.primary} opacity="0.8"/></svg>
           By invitation only
         </div>
-        <h2 style={{ fontFamily:'Syne, sans-serif', fontSize:'clamp(30px,4vw,44px)', fontWeight:800, letterSpacing:'-1.5px', lineHeight:1.12, marginBottom:16, color:T.white }}>The Relentless<br />Registry</h2>
+        <h2 style={{ fontFamily:"Georgia, 'Times New Roman', serif", fontSize:'clamp(30px,4vw,44px)', fontWeight:800, letterSpacing:'-1.5px', lineHeight:1.12, marginBottom:16, color:T.white }}>The Relentless<br />Registry</h2>
         <p style={{ color:T.muted, fontSize:16, lineHeight:1.7, marginBottom:32 }}>An exclusive, curated list of top ex-founders in our network. You can't apply to join—only peers can nominate you. Companies must request access to view any profile.</p>
         <BtnPrimary size="lg" onClick={onNavigate}>Request access →</BtnPrimary>
       </div>
       <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:14 }}>
         {[['147','Registry members'],['$2.4M','Avg. funding raised'],['6+','Sectors covered'],['94%','Placement rate'],['11 days','Avg. to hire'],['100%','Referral entry']].map(([n,l]) => (
           <div key={l} style={{ background:'rgba(255,255,255,0.05)', border:`1px solid ${T.border}`, borderRadius:12, padding: isMobile ? 14 : 20, textAlign:'center' }}>
-            <div style={{ fontFamily:'Syne, sans-serif', fontSize: isMobile ? 20 : 26, fontWeight:700, color:T.white }}>{n}</div>
+            <div style={{ fontFamily:"Georgia, 'Times New Roman', serif", fontSize: isMobile ? 20 : 26, fontWeight:700, color:T.white }}>{n}</div>
             <div style={{ fontSize:12, color:T.muted, marginTop:5, lineHeight:1.4 }}>{l}</div>
           </div>
         ))}
@@ -181,7 +181,7 @@ const CommunityCard = ({ icon, title, desc }) => {
       <div style={{ width:44, height:44, borderRadius:11, background:'#FFF3EC', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:20 }}>
         <Icon d={icon} size={22} stroke={T.primary} />
       </div>
-      <div style={{ fontFamily:'Syne, sans-serif', fontSize:18, fontWeight:700, color:T.textDark, marginBottom:8 }}>{title}</div>
+      <div style={{ fontFamily:"Georgia, 'Times New Roman', serif", fontSize:18, fontWeight:700, color:T.textDark, marginBottom:8 }}>{title}</div>
       <p style={{ fontSize:14, color:T.textMuted, lineHeight:1.65 }}>{desc}</p>
     </div>
   );
@@ -325,7 +325,7 @@ export default function LandingPage() {
             Now onboarding ex-founders to the Registry
           </div>
 
-          <h1 className="fade-up-2" style={{ fontFamily:'Syne, sans-serif', fontSize:'clamp(46px,7.5vw,84px)', fontWeight:800, lineHeight:1.07, letterSpacing:'-2.5px', color:T.white, marginBottom:28 }}>
+          <h1 className="fade-up-2" style={{ fontFamily:"Georgia, 'Times New Roman', serif", fontSize:'clamp(46px,7.5vw,84px)', fontWeight:800, lineHeight:1.07, letterSpacing:'-2.5px', color:T.white, marginBottom:28 }}>
             Startups don't just need<br />
             employees. They need{' '}
             <span style={{ background:'linear-gradient(120deg, #4A7A1A 0%, #FF6600 60%, #FF8C33 100%)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>believers.</span>
@@ -366,7 +366,7 @@ export default function LandingPage() {
           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-end', gap:32, marginBottom:48, flexWrap:'wrap' }}>
             <Reveal>
               <div style={{ fontSize:11, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:T.primary, marginBottom:14 }}>Why PivotHire</div>
-              <h2 style={{ fontFamily:'Syne, sans-serif', fontSize:'clamp(34px,4vw,52px)', fontWeight:800, letterSpacing:'-1.5px', lineHeight:1.12 }}>Not your typical<br />job board.</h2>
+              <h2 style={{ fontFamily:"Georgia, 'Times New Roman', serif", fontSize:'clamp(34px,4vw,52px)', fontWeight:800, letterSpacing:'-1.5px', lineHeight:1.12 }}>Not your typical<br />job board.</h2>
             </Reveal>
             <Reveal delay={0.1}><p style={{ fontSize:17, color:T.textMuted, maxWidth:480, lineHeight:1.65 }}>Traditional hiring is broken for ex-founders. Keywords miss mindset. Resumes hide what matters most—how someone operates when everything's on fire.</p></Reveal>
           </div>
@@ -389,7 +389,7 @@ export default function LandingPage() {
         <div style={{ maxWidth:1120, margin:'0 auto' }}>
           <Reveal><div style={{ fontSize:11, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'rgba(255,140,60,1)', marginBottom:14 }}>How it works</div></Reveal>
           <div style={{ display:'flex', justifyContent:'space-between', alignItems: isMobile ? 'flex-start' : 'flex-end', flexDirection: isMobile ? 'column' : 'row', gap:24, marginBottom:40, flexWrap:'wrap' }}>
-            <h2 style={{ fontFamily:'Syne, sans-serif', fontSize:'clamp(34px,4vw,52px)', fontWeight:800, letterSpacing:'-1.5px', lineHeight:1.12, color:T.white }}>From shutdown to<br />your next chapter.</h2>
+            <h2 style={{ fontFamily:"Georgia, 'Times New Roman', serif", fontSize:'clamp(34px,4vw,52px)', fontWeight:800, letterSpacing:'-1.5px', lineHeight:1.12, color:T.white }}>From shutdown to<br />your next chapter.</h2>
             <div style={{ display:'flex', gap:4, background:'rgba(255,255,255,0.06)', borderRadius:10, padding:4 }}>
               {['founders', 'companies'].map(tab => (
                 <button key={tab} onClick={() => setActiveTab(tab)}
@@ -408,7 +408,7 @@ export default function LandingPage() {
                     <div style={{ position:'absolute', right:-10, top:36, color:'rgba(255,102,0,0.5)', fontSize:18, zIndex:1 }}>→</div>
                   )}
                   <div style={{ fontSize:11, fontWeight:700, letterSpacing:'2px', color:T.primary, textTransform:'uppercase', marginBottom:20 }}>{s.n}</div>
-                  <div style={{ fontFamily:'Syne, sans-serif', fontSize:17, fontWeight:700, color:T.white, marginBottom:10, lineHeight:1.3 }}>{s.title}</div>
+                  <div style={{ fontFamily:"Georgia, 'Times New Roman', serif", fontSize:17, fontWeight:700, color:T.white, marginBottom:10, lineHeight:1.3 }}>{s.title}</div>
                   <p style={{ fontSize:14, color:T.muted, lineHeight:1.65 }}>{s.desc}</p>
                 </div>
               </Reveal>
@@ -429,7 +429,7 @@ export default function LandingPage() {
         <div style={{ maxWidth:1120, margin:'0 auto' }}>
           <div style={{ fontSize:11, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:T.primary, marginBottom:14 }}>Community</div>
           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-end', gap:32, marginBottom:56, flexWrap:'wrap' }}>
-            <h2 style={{ fontFamily:'Syne, sans-serif', fontSize:'clamp(34px,4vw,52px)', fontWeight:800, letterSpacing:'-1.5px', lineHeight:1.12 }}>More than<br />a marketplace.</h2>
+            <h2 style={{ fontFamily:"Georgia, 'Times New Roman', serif", fontSize:'clamp(34px,4vw,52px)', fontWeight:800, letterSpacing:'-1.5px', lineHeight:1.12 }}>More than<br />a marketplace.</h2>
             <p style={{ fontSize:17, color:T.textMuted, maxWidth:460, lineHeight:1.65 }}>PivotHire is a trust network. When great founders know each other, hiring becomes a warm referral—not a cold search.</p>
           </div>
           <div style={{ display:'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap:20, marginTop: isMobile ? 36 : 56 }}>
@@ -447,7 +447,7 @@ export default function LandingPage() {
       {/* ── FINAL CTA ── */}
       <section style={{ background:T.dark, padding: isMobile ? '72px 20px' : '120px 48px', textAlign:'center' }}>
         <div style={{ maxWidth:680, margin:'0 auto' }}>
-          <h2 style={{ fontFamily:'Syne, sans-serif', fontSize:'clamp(36px,5vw,60px)', fontWeight:800, letterSpacing:'-2px', lineHeight:1.1, color:T.white, marginBottom:20 }}>
+          <h2 style={{ fontFamily:"Georgia, 'Times New Roman', serif", fontSize:'clamp(36px,5vw,60px)', fontWeight:800, letterSpacing:'-2px', lineHeight:1.1, color:T.white, marginBottom:20 }}>
             Your next chapter starts<br />with people who've been there.
           </h2>
           <p style={{ color:T.muted, fontSize:18, marginBottom:44, lineHeight:1.65 }}>Join 347 ex-founders who've found their next mission, or connect with builders who don't need hand-holding.</p>

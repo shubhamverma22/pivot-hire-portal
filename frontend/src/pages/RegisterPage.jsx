@@ -5,6 +5,9 @@ import { ArrowRight, Rocket, Building2 } from 'lucide-react';
 import { PivotHireLogo } from '../components/Logo';
 import clsx from 'clsx';
 
+const HEAD = "'Georgia', 'Times New Roman', serif";
+const BODY = "'DM Sans', sans-serif";
+
 export default function RegisterPage() {
   const { registerFounder, registerCompany } = useAuth();
   const navigate = useNavigate();
@@ -32,7 +35,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6" style={{ background: '#0A0F08' }}>
+    <div className="min-h-screen flex items-center justify-center p-6" style={{ background: '#0A0F08', fontFamily: BODY }}>
       {/* Background effects */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute inset-0" style={{
@@ -50,8 +53,8 @@ export default function RegisterPage() {
         </div>
 
         <div className="bg-white rounded-2xl p-8 shadow-float">
-          <h1 className="text-2xl font-display font-extrabold text-slate-900 text-center mb-2 tracking-tight">Create your account</h1>
-          <p className="text-slate-500 text-center mb-6">Join PivotHire and start your next chapter.</p>
+          <h1 className="text-2xl font-extrabold text-slate-900 text-center mb-2 tracking-tight" style={{ fontFamily: HEAD }}>Create your account</h1>
+          <p className="text-slate-500 text-center mb-6" style={{ fontFamily: BODY }}>Join PivotHire and start your next chapter.</p>
 
           {/* Role Selector */}
           <div className="grid grid-cols-2 gap-3 mb-6">
