@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PivotHireLogo } from '../components/Logo';
 
-/* ── Design tokens (matching landing page) ── */
+/* ── Design tokens ── */
 const T = {
   dark:    '#0A0F08',
   dark2:   '#0E1509',
@@ -21,6 +21,10 @@ const T = {
   textDark:'#0E160A',
   textMuted:'#6B7060',
 };
+
+const HEAD = 'Georgia, "Times New Roman", serif';
+const SUB  = 'Georgia, "Times New Roman", serif';
+const BODY = 'DM Sans, sans-serif';
 
 /* ── Hooks ── */
 const useIsMobile = () => {
@@ -46,24 +50,6 @@ const useReveal = (threshold = 0.12) => {
   return [ref, vis];
 };
 
-const useCounter = (target, dur = 1400, active) => {
-  const [val, setVal] = useState(0);
-  useEffect(() => {
-    if (!active) return;
-    let start = null;
-    const step = ts => {
-      if (!start) start = ts;
-      const p = Math.min((ts - start) / dur, 1);
-      const eased = 1 - Math.pow(1 - p, 3);
-      setVal(Math.floor(eased * target));
-      if (p < 1) requestAnimationFrame(step);
-      else setVal(target);
-    };
-    requestAnimationFrame(step);
-  }, [active, target, dur]);
-  return val;
-};
-
 /* ── Small components ── */
 const Reveal = ({ children, delay = 0, style = {}, className = '' }) => {
   const [ref, vis] = useReveal();
@@ -86,19 +72,6 @@ const Orb = ({ size, x, y, color, anim, dur, delay = 0 }) => (
   }} />
 );
 
-const AnimatedStat = ({ num, suffix, label, delay = 0 }) => {
-  const [ref, vis] = useReveal();
-  const count = useCounter(num, 1600, vis);
-  return (
-    <div ref={ref} style={{ textAlign:'center', opacity: vis ? 1 : 0, transform: vis ? 'translateY(0)' : 'translateY(16px)', transition:`opacity 0.5s ${delay/1000}s ease, transform 0.5s ${delay/1000}s ease` }}>
-      <div style={{ fontFamily:"Georgia, 'Times New Roman', serif", fontSize:26, fontWeight:700, color:T.white }}>
-        {num === 0 ? '0' : count}{suffix}
-      </div>
-      <div style={{ fontSize:13, color:T.muted, marginTop:3 }}>{label}</div>
-    </div>
-  );
-};
-
 const BtnPrimary = ({ children, onClick, style={}, size='md' }) => {
   const [hov, setHov] = useState(false);
   const pad = size === 'lg' ? '14px 28px' : '9px 20px';
@@ -107,83 +80,25 @@ const BtnPrimary = ({ children, onClick, style={}, size='md' }) => {
     <button onClick={onClick}
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
-      style={{ background: hov ? T.primaryHover : T.primary, color:'#fff', border:'none', padding:pad, borderRadius:10, fontFamily:'DM Sans, sans-serif', fontSize:fs, fontWeight:600, cursor:'pointer', display:'inline-flex', alignItems:'center', gap:6, transition:'all 0.2s', transform: hov ? 'translateY(-1px)' : 'none', boxShadow: hov ? `0 12px 32px ${T.glow}` : 'none', ...style }}>
+      style={{ background: hov ? T.primaryHover : T.primary, color:'#fff', border:'none', padding:pad, borderRadius:10, fontFamily:BODY, fontSize:fs, fontWeight:600, cursor:'pointer', display:'inline-flex', alignItems:'center', gap:6, transition:'all 0.2s', transform: hov ? 'translateY(-1px)' : 'none', boxShadow: hov ? `0 12px 32px ${T.glow}` : 'none', ...style }}>
       {children}
     </button>
   );
 };
 
-const BtnGhost = ({ children, onClick, style={} }) => {
+const BtnGhost = ({ children, onClick, style={}, dark=true }) => {
   const [hov, setHov] = useState(false);
+  const baseColor = dark ? T.white : T.textDark;
+  const baseBorder = dark ? T.border : 'rgba(14,22,10,0.18)';
+  const hoverBorder = dark ? T.borderHover : 'rgba(14,22,10,0.36)';
+  const hoverBg = dark ? 'rgba(255,255,255,0.07)' : 'rgba(14,22,10,0.04)';
   return (
     <button onClick={onClick}
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
-      style={{ background: hov ? 'rgba(255,255,255,0.07)' : 'transparent', color:T.white, border:`1px solid ${hov ? T.borderHover : T.border}`, padding:'9px 20px', borderRadius:10, fontFamily:'DM Sans, sans-serif', fontSize:14, fontWeight:500, cursor:'pointer', display:'inline-flex', alignItems:'center', gap:6, transition:'all 0.2s', ...style }}>
+      style={{ background: hov ? hoverBg : 'transparent', color:baseColor, border:`1px solid ${hov ? hoverBorder : baseBorder}`, padding:'9px 20px', borderRadius:10, fontFamily:BODY, fontSize:14, fontWeight:500, cursor:'pointer', display:'inline-flex', alignItems:'center', gap:6, transition:'all 0.2s', ...style }}>
       {children}
     </button>
-  );
-};
-
-const Icon = ({ d, size=20, stroke=T.white, strokeWidth=1.8 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-    <path d={d} stroke={stroke} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-);
-
-/* ── Sub-sections ── */
-const WhyCard = ({ icon, old, new_, desc }) => {
-  const [hov, setHov] = useState(false);
-  return (
-    <div onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}
-      style={{ background:'#F9F7F4', border:`1px solid ${hov?'rgba(255,102,0,0.28)':'rgba(255,102,0,0.1)'}`, borderRadius:16, padding:32, transition:'all 0.22s', transform: hov?'translateY(-2px)':'none', boxShadow: hov?'0 8px 32px rgba(0,0,0,0.06)':'none' }}>
-      <div style={{ width:42, height:42, borderRadius:11, background:T.primary, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:20 }}>
-        <Icon d={icon} size={20} />
-      </div>
-      <span style={{ fontSize:13, color:T.textMuted, textDecoration:'line-through', display:'block', marginBottom:6 }}>{old}</span>
-      <span style={{ fontFamily:"Georgia, 'Times New Roman', serif", fontSize:20, fontWeight:700, color:T.textDark, display:'block', marginBottom:10 }}>{new_}</span>
-      <p style={{ fontSize:14, color:T.textMuted, lineHeight:1.65 }}>{desc}</p>
-    </div>
-  );
-};
-
-const RegistryCard = ({ onNavigate }) => {
-  const isMobile = useIsMobile();
-  return (
-    <div className="grid-r2" style={{ display:'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? 36 : 64, alignItems:'center', background:`linear-gradient(135deg, ${T.dark3} 0%, rgba(28,60,10,0.4) 100%)`, border:'1px solid rgba(28,60,10,0.4)', borderRadius:24, padding: isMobile ? '36px 24px' : 64, position:'relative', overflow:'hidden' }}>
-      <div style={{ position:'absolute', top:-60, right:-60, width:300, height:300, borderRadius:'50%', background:'rgba(255,102,0,0.1)', filter:'blur(80px)', pointerEvents:'none' }} />
-      <div>
-        <div style={{ display:'inline-flex', alignItems:'center', gap:8, background:'rgba(255,102,0,0.12)', border:'1px solid rgba(255,102,0,0.3)', borderRadius:100, padding:'5px 16px', fontSize:12, fontWeight:700, color:T.primary, letterSpacing:'1.5px', textTransform:'uppercase', marginBottom:24 }}>
-          <svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill={T.primary} opacity="0.8"/></svg>
-          By invitation only
-        </div>
-        <h2 style={{ fontFamily:"Georgia, 'Times New Roman', serif", fontSize:'clamp(30px,4vw,44px)', fontWeight:800, letterSpacing:'-1.5px', lineHeight:1.12, marginBottom:16, color:T.white }}>The Relentless<br />Registry</h2>
-        <p style={{ color:T.muted, fontSize:16, lineHeight:1.7, marginBottom:32 }}>An exclusive, curated list of top ex-founders in our network. You can't apply to join—only peers can nominate you. Companies must request access to view any profile.</p>
-        <BtnPrimary size="lg" onClick={onNavigate}>Request access →</BtnPrimary>
-      </div>
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:14 }}>
-        {[['147','Registry members'],['$2.4M','Avg. funding raised'],['6+','Sectors covered'],['94%','Placement rate'],['11 days','Avg. to hire'],['100%','Referral entry']].map(([n,l]) => (
-          <div key={l} style={{ background:'rgba(255,255,255,0.05)', border:`1px solid ${T.border}`, borderRadius:12, padding: isMobile ? 14 : 20, textAlign:'center' }}>
-            <div style={{ fontFamily:"Georgia, 'Times New Roman', serif", fontSize: isMobile ? 20 : 26, fontWeight:700, color:T.white }}>{n}</div>
-            <div style={{ fontSize:12, color:T.muted, marginTop:5, lineHeight:1.4 }}>{l}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const CommunityCard = ({ icon, title, desc }) => {
-  const [hov, setHov] = useState(false);
-  return (
-    <div onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}
-      style={{ background:T.cardBg, border:`1px solid ${hov?'rgba(255,102,0,0.2)':T.border}`, borderRadius:16, padding:32, transition:'all 0.22s', boxShadow: hov?'0 4px 24px rgba(0,0,0,0.06)':'none' }}>
-      <div style={{ width:44, height:44, borderRadius:11, background:'#FFF3EC', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:20 }}>
-        <Icon d={icon} size={22} stroke={T.primary} />
-      </div>
-      <div style={{ fontFamily:"Georgia, 'Times New Roman', serif", fontSize:18, fontWeight:700, color:T.textDark, marginBottom:8 }}>{title}</div>
-      <p style={{ fontSize:14, color:T.textMuted, lineHeight:1.65 }}>{desc}</p>
-    </div>
   );
 };
 
@@ -206,12 +121,12 @@ const ScrollProgress = () => {
 };
 
 /* ══════════════════════════════════════
-   LANDING PAGE COMPONENT
+   LANDING PAGE
 ══════════════════════════════════════ */
 export default function LandingPage() {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const [activeTab, setActiveTab] = useState('founders');
+  const [activeTab, setActiveTab] = useState('employpreneur');
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -224,30 +139,30 @@ export default function LandingPage() {
   const goLogin = () => navigate('/login');
   const goRegister = () => navigate('/register');
 
-  const founderSteps = [
-    { n:'01', title:'Build your proof profile', desc:'No CV. Tell us what you built, broke, and fixed. Show how you operate under fire—not what your title was.' },
-    { n:'02', title:'Get curated matches', desc:'We surface opportunities where your specific chaos-handling experience is exactly what’s needed. You pick who to engage.' },
-    { n:'03', title:'Founder-to-founder call', desc:'A casual 30-min call. No HR. No scripted interview. Two founders talking about the real problem.' },
-    { n:'04', title:'Sprint or commit', desc:'Start with a paid 2-week sprint. Validate fit both ways before making any long-term call.' },
+  const employpreneurSteps = [
+    { n:'01', title:'Build your founder profile', desc:"Tell us what you've built, what broke, what you learned, and what kind of environment you do your best work in. No résumé. No cover letter." },
+    { n:'02', title:'We match you on mindset', desc:'Our algorithm surfaces startups whose stage, culture, and leadership style align with how you operate — not just who has an open role.' },
+    { n:'03', title:'Meet the founder with full context', desc:"You go into every intro knowing the company's stage, what they're solving, and why they think you're the right fit. No blind applications, no wasted conversations." },
+    { n:'04', title:'Build something worth building', desc:"Accept the role, align on ownership, and get back to doing what you're built for." },
   ];
-  const companySteps = [
-    { n:'01', title:'Post the real problem', desc:'Describe what needs building—not a job description. What does high-impact look like in your specific chaos?' },
-    { n:'02', title:'Access vetted builders', desc:'Browse verified ex-founders in the Relentless Registry. Filter by domain and execution style, not years of experience.' },
-    { n:'03', title:'Direct founder call', desc:'You speak directly with candidates. No recruiters. No intermediaries. Just two founders sizing each other up.' },
-    { n:'04', title:'Hire in days, not months', desc:'Start with a sprint. See real output before committing. Our median time-to-hire is 11 days.' },
+
+  const entrepreneurSteps = [
+    { n:'01', title:"Tell us what you're building and who you need", desc:"Not just the role — the gaps, the stage, the kind of person who'll thrive in your specific environment. Be honest about the chaos." },
+    { n:'02', title:'We match you with employpreneurs', desc:'Profiles surfaced based on mindset alignment, stage readiness, and operating style — not résumé keywords.' },
+    { n:'03', title:'Review profiles with real context', desc:"Every profile tells you what someone built, what didn't work, and how they think. You're assessing fit before the first conversation." },
+    { n:'04', title:'Make the intro count', desc:'A warm, context-rich introduction on both sides. Faster decisions, less wasted time, higher signal from the first meeting.' },
   ];
-  const steps = activeTab === 'founders' ? founderSteps : companySteps;
+
+  const steps = activeTab === 'employpreneur' ? employpreneurSteps : entrepreneurSteps;
 
   const links = [
     { label: 'Why PivotHire', href: '#why' },
     { label: 'How it works', href: '#how' },
-    { label: 'The Registry', href: '#registry' },
-    { label: 'Community', href: '#community' },
+    { label: "Who it's for", href: '#who' },
   ];
 
   return (
-    <div style={{ background: T.dark, color: T.white, fontFamily: 'DM Sans, sans-serif' }}>
-      {/* CSS animations */}
+    <div style={{ background: T.dark, color: T.white, fontFamily: BODY }}>
       <style>{`
         @keyframes floatA { 0%,100% { transform:translateY(0) scale(1); } 50% { transform:translateY(-28px) scale(1.04); } }
         @keyframes floatB { 0%,100% { transform:translateY(0) scale(1); } 50% { transform:translateY(24px) scale(0.97); } }
@@ -310,8 +225,8 @@ export default function LandingPage() {
         </div>
       )}
 
-      {/* ── HERO ── */}
-      <section style={{ minHeight:'100vh', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding: isMobile ? '120px 20px 60px' : '140px 48px 100px', position:'relative', textAlign:'center', overflow:'hidden' }}>
+      {/* ── SECTION 1 — HERO ── */}
+      <section style={{ minHeight:'100vh', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding: isMobile ? '120px 20px 80px' : '140px 48px 120px', position:'relative', textAlign:'center', overflow:'hidden' }}>
         <div style={{ position:'absolute', inset:0, background:`radial-gradient(ellipse 90% 60% at 50% -5%, rgba(255,102,0,0.18) 0%, transparent 65%), radial-gradient(ellipse 50% 40% at 85% 85%, rgba(28,60,10,0.35) 0%, transparent 50%), ${T.dark}`, zIndex:0 }} />
         <div style={{ position:'absolute', inset:0, backgroundImage:'linear-gradient(rgba(255,255,255,0.028) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.028) 1px, transparent 1px)', backgroundSize:'72px 72px', maskImage:'radial-gradient(ellipse 75% 65% at 50% 25%, black 0%, transparent 68%)', WebkitMaskImage:'radial-gradient(ellipse 75% 65% at 50% 25%, black 0%, transparent 68%)', zIndex:0 }} />
         <Orb size={420} x={-8} y={10} color="rgba(255,102,0,0.07)" anim="floatA" dur={9} delay={0} />
@@ -319,82 +234,143 @@ export default function LandingPage() {
         <Orb size={280} x={80} y={55} color="rgba(255,102,0,0.06)" anim="floatC" dur={14} delay={1} />
         <Orb size={200} x={10} y={60} color="rgba(28,60,10,0.18)" anim="floatB" dur={8} delay={3} />
 
-        <div style={{ position:'relative', zIndex:1, maxWidth:900 }}>
+        <div style={{ position:'relative', zIndex:1, maxWidth:920 }}>
           <div className="fade-up" style={{ display:'inline-flex', alignItems:'center', gap:8, background:'rgba(255,102,0,0.1)', border:'1px solid rgba(255,102,0,0.3)', borderRadius:100, padding:'6px 18px', fontSize:13, fontWeight:500, color:'rgba(255,140,60,1)', marginBottom:36 }}>
             <span style={{ width:7, height:7, borderRadius:'50%', background:T.primary, animation:'pulse 2s infinite', display:'inline-block' }} />
-            Now onboarding ex-founders to the Registry
+            Invite-only · Now onboarding employpreneurs
           </div>
 
-          <h1 className="fade-up-2" style={{ fontFamily:"Georgia, 'Times New Roman', serif", fontSize:'clamp(46px,7.5vw,84px)', fontWeight:800, lineHeight:1.07, letterSpacing:'-2.5px', color:T.white, marginBottom:28 }}>
-            Startups don't just need<br />
-            employees. They need{' '}
-            <span style={{ background:'linear-gradient(120deg, #4A7A1A 0%, #FF6600 60%, #FF8C33 100%)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>believers.</span>
+          <h1 className="fade-up-2" style={{ fontFamily:HEAD, fontSize:'clamp(40px,6.5vw,76px)', fontWeight:700, lineHeight:1.1, letterSpacing:'-1.5px', color:T.white, marginBottom:28 }}>
+            You've already built.<br />
+            Now build with{' '}
+            <span style={{ background:'linear-gradient(120deg, #4A7A1A 0%, #FF6600 60%, #FF8C33 100%)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text', fontStyle:'italic' }}>someone who gets it.</span>
           </h1>
 
-          <p className="fade-up-3" style={{ fontSize:'clamp(16px,2vw,20px)', color:T.muted, maxWidth:580, margin:'0 auto 48px', lineHeight:1.65 }}>
-            PivotHire connects ex-founders with early-stage startups that need high-agency, execution-driven talent. No resumes. No keywords. Just proof of work.
+          <p className="fade-up-3" style={{ fontSize:'clamp(16px,2vw,20px)', color:T.muted, maxWidth:640, margin:'0 auto 48px', lineHeight:1.7, fontFamily:BODY }}>
+            PivotHire connects entrepreneurs who need their first real hires with <em>employpreneurs</em> — people who've founded, pivoted, and are ready to build again inside a startup that deserves their experience.
           </p>
 
-          <div className="fade-up-4" style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:12, flexWrap:'wrap', marginBottom: isMobile ? 48 : 72 }}>
+          <div className="fade-up-4" style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:12, flexWrap:'wrap' }}>
             <BtnPrimary size="lg" onClick={goRegister}>
-              I'm an ex-founder →
+              I've built before, I want back in →
             </BtnPrimary>
             <BtnGhost onClick={goRegister} style={{ padding:'14px 28px', fontSize:15 }}>
-              I'm hiring builders
+              I'm a founder, I need builders →
             </BtnGhost>
           </div>
-
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap: isMobile ? 20 : 40, flexWrap:'wrap' }}>
-            {[
-              { num:347, suffix:'+', label:'Ex-founders in network' },
-              { num:89,  suffix:'',  label:'Startups hiring now' },
-              { num:0,   suffix:'',  label:'Resumes required' },
-              { num:11,  suffix:' days', label:'Avg. time to hire' },
-            ].map(({ num, suffix, label }, i) => (
-              <span key={label} style={{ display:'contents' }}>
-                {i > 0 && <div style={{ width:1, height:36, background:T.border }} />}
-                <AnimatedStat num={num} suffix={suffix} label={label} delay={i * 200} />
-              </span>
-            ))}
-          </div>
         </div>
       </section>
 
-      {/* ── WHY ── */}
-      <section id="why" style={{ background:T.cardBg, padding: isMobile ? '72px 20px' : '108px 48px', color:T.textDark }}>
+      {/* ── SECTION 2 — THE PROBLEM WE'RE SOLVING ── */}
+      <section id="problem" style={{ background:T.dark2, padding: isMobile ? '88px 20px' : '128px 48px', position:'relative' }}>
+        <div style={{ maxWidth:880, margin:'0 auto' }}>
+          <Reveal>
+            <div style={{ fontSize:11, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:T.primary, marginBottom:18 }}>The Problem We're Solving</div>
+            <h2 style={{ fontFamily:HEAD, fontSize:'clamp(30px,3.6vw,46px)', fontWeight:700, letterSpacing:'-1px', lineHeight:1.2, color:T.white, marginBottom:36 }}>
+              Most hiring platforms were built for corporate careers.
+            </h2>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <p style={{ fontSize:'clamp(16px,1.6vw,19px)', color:T.muted, lineHeight:1.8, marginBottom:24, fontFamily:BODY }}>
+              Early-stage startups don't have corporate problems — they have <span style={{ color:T.white }}>founder problems</span>. Speed, ambiguity, ownership, trust. The people who understand that best are the ones who've already lived it.
+            </p>
+          </Reveal>
+          <Reveal delay={0.18}>
+            <p style={{ fontSize:'clamp(16px,1.6vw,19px)', color:T.muted, lineHeight:1.8, marginBottom:24, fontFamily:BODY }}>
+              <span style={{ color:T.white, fontWeight:500 }}>Employpreneurs</span> — former founders who've pivoted, paused, or closed — carry something no job board can surface: the experience of building from nothing. They're not looking for a job. They're looking for a mission worth joining.
+            </p>
+          </Reveal>
+          <Reveal delay={0.26}>
+            <p style={{ fontSize:'clamp(17px,1.7vw,20px)', color:T.white, lineHeight:1.8, fontStyle:'italic', fontFamily:HEAD, marginTop:32 }}>
+              PivotHire exists for both sides of that equation.
+            </p>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ── SECTION 3 — WHY PIVOTHIRE ── */}
+      <section id="why" style={{ background:T.cardBg, padding: isMobile ? '88px 20px' : '128px 48px', color:T.textDark }}>
         <div style={{ maxWidth:1120, margin:'0 auto' }}>
-          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-end', gap:32, marginBottom:48, flexWrap:'wrap' }}>
-            <Reveal>
-              <div style={{ fontSize:11, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:T.primary, marginBottom:14 }}>Why PivotHire</div>
-              <h2 style={{ fontFamily:"Georgia, 'Times New Roman', serif", fontSize:'clamp(34px,4vw,52px)', fontWeight:800, letterSpacing:'-1.5px', lineHeight:1.12 }}>Not your typical<br />job board.</h2>
+          <Reveal>
+            <div style={{ fontSize:11, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:T.primary, marginBottom:14, textAlign:'center' }}>Why PivotHire</div>
+            <h2 style={{ fontFamily:HEAD, fontSize:'clamp(30px,3.8vw,48px)', fontWeight:700, letterSpacing:'-1px', lineHeight:1.2, textAlign:'center', marginBottom: isMobile ? 56 : 80 }}>
+              Built for both sides of the table.
+            </h2>
+          </Reveal>
+
+          <div style={{ display:'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? 56 : 64 }}>
+            {/* For Employpreneurs */}
+            <Reveal delay={0.05}>
+              <div>
+                <div style={{ fontSize:12, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:T.primary, marginBottom:14 }}>For Employpreneurs</div>
+                <h3 style={{ fontFamily:HEAD, fontSize:'clamp(24px,2.6vw,32px)', fontWeight:700, letterSpacing:'-0.5px', lineHeight:1.25, marginBottom:32 }}>
+                  Your pivot is your edge. We help you use it.
+                </h3>
+                <div style={{ display:'flex', flexDirection:'column', gap:22 }}>
+                  {[
+                    { t:'Matched on mindset, not credentials', d:"We don't filter by job title or years of experience. We match on how you operate — your risk appetite, ownership style, and the kind of stage you thrive in." },
+                    { t:'Founders who actually value what you bring', d:"Every entrepreneur on PivotHire knows they're hiring someone who's been in the room where decisions get made with no playbook. That context changes how they hire." },
+                    { t:'Back in the game — on your terms', d:'No contract gigs. No advisory roles. Real, embedded positions with early-stage startups building something that matters.' },
+                  ].map((p, i) => (
+                    <div key={i} style={{ display:'flex', gap:16 }}>
+                      <div style={{ flexShrink:0, width:6, height:6, borderRadius:'50%', background:T.primary, marginTop:11 }} />
+                      <div>
+                        <div style={{ fontFamily:SUB, fontSize:17, fontWeight:700, color:T.textDark, marginBottom:6, lineHeight:1.35 }}>{p.t}</div>
+                        <p style={{ fontSize:15, color:T.textMuted, lineHeight:1.7, fontFamily:BODY }}>{p.d}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </Reveal>
-            <Reveal delay={0.1}><p style={{ fontSize:17, color:T.textMuted, maxWidth:480, lineHeight:1.65 }}>Traditional hiring is broken for ex-founders. Keywords miss mindset. Resumes hide what matters most—how someone operates when everything's on fire.</p></Reveal>
-          </div>
 
-          <div style={{ display:'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap:20 }}>
-            {[
-              { icon:'M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z', old:'Resume screening', new_:'Proof-of-work profiles', desc:'Founders show real problem-solving through recorded challenges—not polished CVs that mask actual operating style.' },
-              { icon:'M13 10V3L4 14h7v7l9-11h-7z', old:'Mass applications', new_:'Curated, warm matching', desc:'We match on ambition, values, and execution style—not keywords. Every intro is intentional and mutual.' },
-              { icon:'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z', old:'3-month hiring cycles', new_:'2-week sprint option', desc:'Try before you commit. Start with a paid sprint to evaluate fit—both ways—before long-term offers.' },
-              { icon:'M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064', old:'Keyword filtering', new_:'Mindset-based matching', desc:'We match on how founders think about chaos, ownership, and execution—the attributes startups actually need.' },
-            ].map((card, i) => (
-              <Reveal key={i} delay={i * 0.08}><WhyCard {...card} /></Reveal>
-            ))}
+            {/* For Entrepreneurs */}
+            <Reveal delay={0.12}>
+              <div>
+                <div style={{ fontSize:12, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:T.primary, marginBottom:14 }}>For Entrepreneurs</div>
+                <h3 style={{ fontFamily:HEAD, fontSize:'clamp(24px,2.6vw,32px)', fontWeight:700, letterSpacing:'-0.5px', lineHeight:1.25, marginBottom:32 }}>
+                  Your first hires will define the next three years. Get them right.
+                </h3>
+                <div style={{ display:'flex', flexDirection:'column', gap:22 }}>
+                  {[
+                    { t:"Talent that doesn't need hand-holding", d:'Employpreneurs have shipped products, managed teams, and made hard calls under pressure. They come ready — not just capable.' },
+                    { t:'Matched beyond role fit', d:'Our algorithm aligns on ownership mindset, stage readiness, and working style — not just who has the right keywords on their profile.' },
+                    { t:'Trust before the first meeting', d:"Every employpreneur on PivotHire has been through our profiling process. You're not starting from zero on culture fit." },
+                  ].map((p, i) => (
+                    <div key={i} style={{ display:'flex', gap:16 }}>
+                      <div style={{ flexShrink:0, width:6, height:6, borderRadius:'50%', background:T.primary, marginTop:11 }} />
+                      <div>
+                        <div style={{ fontFamily:SUB, fontSize:17, fontWeight:700, color:T.textDark, marginBottom:6, lineHeight:1.35 }}>{p.t}</div>
+                        <p style={{ fontSize:15, color:T.textMuted, lineHeight:1.7, fontFamily:BODY }}>{p.d}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Reveal>
           </div>
         </div>
       </section>
 
-      {/* ── HOW IT WORKS ── */}
-      <section id="how" style={{ background:T.dark2, padding: isMobile ? '72px 20px' : '108px 48px' }}>
+      {/* ── SECTION 4 — HOW IT WORKS ── */}
+      <section id="how" style={{ background:T.dark2, padding: isMobile ? '88px 20px' : '128px 48px' }}>
         <div style={{ maxWidth:1120, margin:'0 auto' }}>
-          <Reveal><div style={{ fontSize:11, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'rgba(255,140,60,1)', marginBottom:14 }}>How it works</div></Reveal>
-          <div style={{ display:'flex', justifyContent:'space-between', alignItems: isMobile ? 'flex-start' : 'flex-end', flexDirection: isMobile ? 'column' : 'row', gap:24, marginBottom:40, flexWrap:'wrap' }}>
-            <h2 style={{ fontFamily:"Georgia, 'Times New Roman', serif", fontSize:'clamp(34px,4vw,52px)', fontWeight:800, letterSpacing:'-1.5px', lineHeight:1.12, color:T.white }}>From shutdown to<br />your next chapter.</h2>
+          <Reveal>
+            <div style={{ fontSize:11, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'rgba(255,140,60,1)', marginBottom:14, textAlign:'center' }}>How it works</div>
+            <h2 style={{ fontFamily:HEAD, fontSize:'clamp(30px,3.8vw,48px)', fontWeight:700, letterSpacing:'-1px', lineHeight:1.2, color:T.white, textAlign:'center', marginBottom:36 }}>
+              Four steps. No noise.
+            </h2>
+          </Reveal>
+
+          <div style={{ display:'flex', justifyContent:'center', marginBottom:48 }}>
             <div style={{ display:'flex', gap:4, background:'rgba(255,255,255,0.06)', borderRadius:10, padding:4 }}>
-              {['founders', 'companies'].map(tab => (
-                <button key={tab} onClick={() => setActiveTab(tab)}
-                  style={{ padding:'10px 22px', borderRadius:7, fontSize:14, fontWeight:500, cursor:'pointer', border:'none', fontFamily:'DM Sans, sans-serif', background: activeTab===tab ? T.primary : 'transparent', color: activeTab===tab ? '#fff' : T.muted, transition:'all 0.2s' }}>
-                  {tab === 'founders' ? 'For Ex-Founders' : 'For Companies'}
+              {[
+                { id:'employpreneur', label:"I'm an Employpreneur" },
+                { id:'entrepreneur',  label:"I'm an Entrepreneur" },
+              ].map(tab => (
+                <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+                  style={{ padding: isMobile ? '10px 14px' : '10px 22px', borderRadius:7, fontSize: isMobile ? 13 : 14, fontWeight:500, cursor:'pointer', border:'none', fontFamily:BODY, background: activeTab===tab.id ? T.primary : 'transparent', color: activeTab===tab.id ? '#fff' : T.muted, transition:'all 0.2s' }}>
+                  {tab.label}
                 </button>
               ))}
             </div>
@@ -403,13 +379,13 @@ export default function LandingPage() {
           <div style={{ display:'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(4, 1fr)', gap:2 }}>
             {steps.map((s, i) => (
               <Reveal key={s.n + activeTab} delay={i * 0.09}>
-                <div style={{ background:T.dark3, padding: isMobile ? '24px 20px' : '36px 28px', borderRadius: isMobile ? 12 : (i===0?'16px 0 0 16px':i===steps.length-1?'0 16px 16px 0':0), position:'relative' }}>
+                <div style={{ background:T.dark3, padding: isMobile ? '24px 20px' : '36px 28px', borderRadius: isMobile ? 12 : (i===0?'16px 0 0 16px':i===steps.length-1?'0 16px 16px 0':0), position:'relative', height:'100%' }}>
                   {!isMobile && i < steps.length-1 && (
                     <div style={{ position:'absolute', right:-10, top:36, color:'rgba(255,102,0,0.5)', fontSize:18, zIndex:1 }}>→</div>
                   )}
                   <div style={{ fontSize:11, fontWeight:700, letterSpacing:'2px', color:T.primary, textTransform:'uppercase', marginBottom:20 }}>{s.n}</div>
-                  <div style={{ fontFamily:"Georgia, 'Times New Roman', serif", fontSize:17, fontWeight:700, color:T.white, marginBottom:10, lineHeight:1.3 }}>{s.title}</div>
-                  <p style={{ fontSize:14, color:T.muted, lineHeight:1.65 }}>{s.desc}</p>
+                  <div style={{ fontFamily:SUB, fontSize:17, fontWeight:700, color:T.white, marginBottom:12, lineHeight:1.3 }}>{s.title}</div>
+                  <p style={{ fontSize:14, color:T.muted, lineHeight:1.7, fontFamily:BODY }}>{s.desc}</p>
                 </div>
               </Reveal>
             ))}
@@ -417,56 +393,149 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── REGISTRY ── */}
-      <section id="registry" style={{ background:T.dark, padding: isMobile ? '72px 20px' : '108px 48px' }}>
+      {/* ── SECTION 5 — WHO IT'S FOR ── */}
+      <section id="who" style={{ background:T.lightBg, padding: isMobile ? '88px 20px' : '128px 48px', color:T.textDark }}>
         <div style={{ maxWidth:1120, margin:'0 auto' }}>
-          <RegistryCard onNavigate={goRegister} />
+          <Reveal>
+            <div style={{ fontSize:11, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:T.primary, marginBottom:14, textAlign:'center' }}>Who it's for</div>
+            <h2 style={{ fontFamily:HEAD, fontSize:'clamp(30px,3.8vw,48px)', fontWeight:700, letterSpacing:'-1px', lineHeight:1.2, textAlign:'center', marginBottom: isMobile ? 56 : 72 }}>
+              Self-select honestly. We do.
+            </h2>
+          </Reveal>
+
+          <div style={{ display:'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? 24 : 28 }}>
+            {/* Employpreneurs */}
+            <Reveal delay={0.05}>
+              <div style={{ background:T.cardBg, borderRadius:20, padding: isMobile ? '32px 24px' : '44px 40px', border:`1px solid ${T.border}`, height:'100%' }}>
+                <h3 style={{ fontFamily:HEAD, fontSize:'clamp(22px,2.4vw,28px)', fontWeight:700, letterSpacing:'-0.5px', marginBottom:18, color:T.textDark }}>
+                  Employpreneurs
+                </h3>
+                <p style={{ fontSize:15.5, color:T.textMuted, lineHeight:1.75, marginBottom:14, fontFamily:BODY }}>
+                  You've founded something. It didn't go the way you planned — or it did, and you're ready for what's next.
+                </p>
+                <p style={{ fontSize:15.5, color:T.textMuted, lineHeight:1.75, marginBottom:28, fontFamily:BODY }}>
+                  You're not looking for a safe job. You're looking for a startup where your instincts are an asset, not a liability.
+                </p>
+                <div style={{ fontFamily:SUB, fontSize:16, fontWeight:700, color:T.textDark, marginBottom:14 }}>You're the right fit if:</div>
+                <ul style={{ listStyle:'none', padding:0, margin:0, display:'flex', flexDirection:'column', gap:12 }}>
+                  {[
+                    'You founded, co-founded, or led a founding team at a startup',
+                    'You\'ve pivoted, paused, or wound down in the last 1–3 years',
+                    'You want to be embedded in an early team — not consulting from the outside',
+                    'You\'re driven by ownership and impact, not title or stability',
+                  ].map((item, i) => (
+                    <li key={i} style={{ display:'flex', gap:12, alignItems:'flex-start' }}>
+                      <span style={{ flexShrink:0, width:6, height:6, borderRadius:'50%', background:T.primary, marginTop:9 }} />
+                      <span style={{ fontSize:15, color:T.textMuted, lineHeight:1.65, fontFamily:BODY }}>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Reveal>
+
+            {/* Entrepreneurs */}
+            <Reveal delay={0.12}>
+              <div style={{ background:T.cardBg, borderRadius:20, padding: isMobile ? '32px 24px' : '44px 40px', border:`1px solid ${T.border}`, height:'100%' }}>
+                <h3 style={{ fontFamily:HEAD, fontSize:'clamp(22px,2.4vw,28px)', fontWeight:700, letterSpacing:'-0.5px', marginBottom:18, color:T.textDark }}>
+                  Entrepreneurs
+                </h3>
+                <p style={{ fontSize:15.5, color:T.textMuted, lineHeight:1.75, marginBottom:14, fontFamily:BODY }}>
+                  You're building something real. You've got conviction, some capital, and a clear problem to solve.
+                </p>
+                <p style={{ fontSize:15.5, color:T.textMuted, lineHeight:1.75, marginBottom:28, fontFamily:BODY }}>
+                  What you don't have is time to hire wrong. Your first 5–10 people will either multiply your speed or kill your momentum.
+                </p>
+                <div style={{ fontFamily:SUB, fontSize:16, fontWeight:700, color:T.textDark, marginBottom:14 }}>You're the right fit if:</div>
+                <ul style={{ listStyle:'none', padding:0, margin:0, display:'flex', flexDirection:'column', gap:12 }}>
+                  {[
+                    "You're at pre-seed, seed, or Series A/B stage",
+                    "You're making foundational hires that need to stick",
+                    "You want people who've felt the weight of early-stage decisions",
+                    "You value how someone thinks over where they've worked",
+                  ].map((item, i) => (
+                    <li key={i} style={{ display:'flex', gap:12, alignItems:'flex-start' }}>
+                      <span style={{ flexShrink:0, width:6, height:6, borderRadius:'50%', background:T.primary, marginTop:9 }} />
+                      <span style={{ fontSize:15, color:T.textMuted, lineHeight:1.65, fontFamily:BODY }}>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Reveal>
+          </div>
         </div>
       </section>
 
-      {/* ── COMMUNITY ── */}
-      <section id="community" style={{ background:T.lightBg, padding: isMobile ? '72px 20px' : '108px 48px', color:T.textDark }}>
-        <div style={{ maxWidth:1120, margin:'0 auto' }}>
-          <div style={{ fontSize:11, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:T.primary, marginBottom:14 }}>Community</div>
-          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-end', gap:32, marginBottom:56, flexWrap:'wrap' }}>
-            <h2 style={{ fontFamily:"Georgia, 'Times New Roman', serif", fontSize:'clamp(34px,4vw,52px)', fontWeight:800, letterSpacing:'-1.5px', lineHeight:1.12 }}>More than<br />a marketplace.</h2>
-            <p style={{ fontSize:17, color:T.textMuted, maxWidth:460, lineHeight:1.65 }}>PivotHire is a trust network. When great founders know each other, hiring becomes a warm referral—not a cold search.</p>
-          </div>
-          <div style={{ display:'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap:20, marginTop: isMobile ? 36 : 56 }}>
-            {[
-              { icon:'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z', title:'Founder Dinners', desc:'Intimate curated dinners across Delhi, Bangalore, and Mumbai. No pitch decks. No name badges. Just founders talking honestly.' },
-              { icon:'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z', title:'VC Partnerships', desc:"We work directly with VCs to surface talent for portfolio companies. PivotHire is talent insurance for your cap table." },
-              { icon:'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1', title:'Referral-Only Network', desc:'Every member nominates just 2–3 others. Quality stays high because reputations are on the line—not just profiles.' },
-            ].map((c, i) => (
-              <Reveal key={i} delay={i * 0.1}><CommunityCard {...c} /></Reveal>
-            ))}
-          </div>
+      {/* ── SECTION 6 — FOUNDER NOTE ── */}
+      <section style={{ background:T.dark, padding: isMobile ? '96px 24px' : '144px 48px', textAlign:'center' }}>
+        <div style={{ maxWidth:720, margin:'0 auto' }}>
+          <Reveal>
+            <div style={{ fontSize:11, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:T.primary, marginBottom:28 }}>A note from the team</div>
+          </Reveal>
+          <Reveal delay={0.08}>
+            <p style={{ fontFamily:HEAD, fontSize:'clamp(20px,2vw,24px)', fontStyle:'italic', color:T.white, lineHeight:1.7, marginBottom:20 }}>
+              PivotHire was built because we kept watching the same mismatch happen.
+            </p>
+          </Reveal>
+          <Reveal delay={0.16}>
+            <p style={{ fontFamily:HEAD, fontSize:'clamp(18px,1.8vw,21px)', fontStyle:'italic', color:T.muted, lineHeight:1.75, marginBottom:20 }}>
+              Founders with battle-tested instincts sitting on the sidelines. Early-stage startups hiring for credentials and losing months to the wrong people.
+            </p>
+          </Reveal>
+          <Reveal delay={0.24}>
+            <p style={{ fontFamily:HEAD, fontSize:'clamp(18px,1.8vw,21px)', fontStyle:'italic', color:T.muted, lineHeight:1.75, marginBottom:36 }}>
+              The gap isn't talent. It's signal. We're building the infrastructure to close it.
+            </p>
+          </Reveal>
+          <Reveal delay={0.32}>
+            <p style={{ fontFamily:BODY, fontSize:14, fontWeight:500, color:T.primary, letterSpacing:'1px', textTransform:'uppercase' }}>
+              — The PivotHire Team
+            </p>
+          </Reveal>
         </div>
       </section>
 
-      {/* ── FINAL CTA ── */}
-      <section style={{ background:T.dark, padding: isMobile ? '72px 20px' : '120px 48px', textAlign:'center' }}>
-        <div style={{ maxWidth:680, margin:'0 auto' }}>
-          <h2 style={{ fontFamily:"Georgia, 'Times New Roman', serif", fontSize:'clamp(36px,5vw,60px)', fontWeight:800, letterSpacing:'-2px', lineHeight:1.1, color:T.white, marginBottom:20 }}>
-            Your next chapter starts<br />with people who've been there.
-          </h2>
-          <p style={{ color:T.muted, fontSize:18, marginBottom:44, lineHeight:1.65 }}>Join 347 ex-founders who've found their next mission, or connect with builders who don't need hand-holding.</p>
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:14, flexWrap:'wrap' }}>
-            <BtnPrimary size="lg" onClick={goRegister}>Apply to the Registry →</BtnPrimary>
-            <BtnGhost onClick={goRegister} style={{ padding:'14px 28px', fontSize:15 }}>Start hiring builders</BtnGhost>
-          </div>
+      {/* ── SECTION 7 — FINAL CTA ── */}
+      <section style={{ background:`linear-gradient(135deg, ${T.dark3} 0%, rgba(28,60,10,0.4) 100%)`, padding: isMobile ? '88px 20px' : '120px 48px', textAlign:'center', position:'relative', overflow:'hidden', borderTop:`1px solid ${T.border}` }}>
+        <div style={{ position:'absolute', top:-80, left:'50%', transform:'translateX(-50%)', width:520, height:520, borderRadius:'50%', background:'rgba(255,102,0,0.1)', filter:'blur(100px)', pointerEvents:'none' }} />
+        <div style={{ position:'relative', zIndex:1, maxWidth:780, margin:'0 auto' }}>
+          <Reveal>
+            <h2 style={{ fontFamily:HEAD, fontSize:'clamp(32px,4.5vw,56px)', fontWeight:700, letterSpacing:'-1.2px', lineHeight:1.15, color:T.white, marginBottom:36 }}>
+              The right hire changes everything.<br />
+              <span style={{ fontStyle:'italic', background:'linear-gradient(120deg, #4A7A1A 0%, #FF6600 60%, #FF8C33 100%)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>So does the right next move.</span>
+            </h2>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:14, flexWrap:'wrap', marginBottom:24 }}>
+              <BtnPrimary size="lg" onClick={goRegister}>Apply as an Employpreneur →</BtnPrimary>
+              <BtnGhost onClick={goRegister} style={{ padding:'14px 28px', fontSize:15 }}>Hire an Employpreneur →</BtnGhost>
+            </div>
+          </Reveal>
+          <Reveal delay={0.18}>
+            <p style={{ fontFamily:HEAD, fontStyle:'italic', fontSize:14, color:T.muted, marginTop:8 }}>
+              Invite-only access. No spam. No job board noise.
+            </p>
+          </Reveal>
         </div>
       </section>
 
       {/* ── FOOTER ── */}
-      <footer style={{ background:T.dark2, borderTop:`1px solid ${T.border}`, padding: isMobile ? '36px 20px' : '36px 48px', display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:20 }}>
-        <PivotHireLogo size={28} />
-        <p style={{ fontSize:13, color:T.muted }}>© 2026 PivotHire. All rights reserved.</p>
-        <div style={{ display:'flex', gap:24 }}>
-          {['Privacy','Terms','Contact','X (Twitter)'].map(l => (
-            <a key={l} href="#" onClick={e=>e.preventDefault()} style={{ fontSize:13, color:T.muted, textDecoration:'none' }}
+      <footer style={{ background:T.dark2, borderTop:`1px solid ${T.border}`, padding: isMobile ? '32px 20px' : '36px 48px', display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:20 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:16, flexWrap:'wrap' }}>
+          <PivotHireLogo size={28} />
+          <p style={{ fontSize:13, color:T.muted, fontFamily:BODY }}>
+            © 2025 PivotHire · <span style={{ fontStyle:'italic', fontFamily:HEAD }}>Built for founders, by people who've been there.</span>
+          </p>
+        </div>
+        <div style={{ display:'flex', gap:24, flexWrap:'wrap' }}>
+          {[
+            { label:'For Employpreneurs', onClick:goRegister },
+            { label:'For Entrepreneurs',  onClick:goRegister },
+            { label:'Sign In',            onClick:goLogin },
+            { label:'Privacy',            onClick:()=>{} },
+          ].map(l => (
+            <a key={l.label} href="#" onClick={e=>{ e.preventDefault(); l.onClick(); }} style={{ fontSize:13, color:T.muted, textDecoration:'none', fontFamily:BODY }}
               onMouseEnter={e=>e.target.style.color=T.white}
-              onMouseLeave={e=>e.target.style.color=T.muted}>{l}</a>
+              onMouseLeave={e=>e.target.style.color=T.muted}>{l.label}</a>
           ))}
         </div>
       </footer>
